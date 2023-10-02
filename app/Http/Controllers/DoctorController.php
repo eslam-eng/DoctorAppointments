@@ -566,9 +566,9 @@ class DoctorController extends Controller
             $store->email=$request->get("email");
             $store->password=$request->get("password");
             $store->phoneno=$request->get("phone");
-
+            $user_id = null;
+            $login_field = $request->get("phone").rand()."#2";
             if(env('ConnectyCube')==true){
-                  $login_field = $request->get("phone").rand()."#2";
                   $user_id = $this->signupconnectycude($request->get("name"),$request->get("password"),$request->get("email"),$request->get("phone"),$login_field);
             }
 
