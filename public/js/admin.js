@@ -6,7 +6,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/servicestable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'icon' , name:'icon'},
             {data: 'name'  , name: 'name'},
             {data: 'action', name:'action'}
@@ -16,12 +16,12 @@ $(document).ready(function () {
               render: function(data) {
                     return '<img src="'+data+'" height="50">';
               }
-            }   
+            }
         ],
         order: [
                 [0, "desc"]
-            ]     
-         
+            ]
+
     });
 });
 
@@ -42,14 +42,14 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-   
+
     $('#bannertable').DataTable({
         processing: true,
         serverSide: true,
         ajax: $("#siteurl").val()+'/bannertable',
         columns: [
-            {data: 'id'    , name: 'id'},  
-            {data: 'image'  , name: 'image'},          
+            {data: 'id'    , name: 'id'},
+            {data: 'image'  , name: 'image'},
             {data: 'action', name:'action'}
         ],
         columnDefs: [
@@ -57,12 +57,12 @@ $(document).ready(function () {
               render: function(data) {
                     return '<img src="'+data+'" height="50">';
               }
-            }   
+            }
         ],
         order: [
                 [0, "desc"]
-            ]     
-         
+            ]
+
     });
 });
 
@@ -111,7 +111,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: $("#siteurl").val()+'/pendingpaymenttable',
-        columns: [           
+        columns: [
             {data: 'doctor_name' , name:'doctor_name'},
             {data: 'amount'  , name: 'amount'},
             {data: 'total_booking',name:'total_booking'},
@@ -128,7 +128,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: $("#siteurl").val()+'/contact_list_table',
-        columns: [           
+        columns: [
             {data: 'id' , name:'id'},
             {data: 'name'  , name: 'name'},
             {data: 'email',name:'email'},
@@ -149,7 +149,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: $("#siteurl").val()+'/completepaymenttable',
-        columns: [           
+        columns: [
             {data: 'doctor_name' , name:'doctor_name'},
             {data: 'amount'  , name: 'amount'},
             {data: 'date',name:'date'},
@@ -163,13 +163,13 @@ $(document).ready(function () {
 
 function delete_record(url) {
     if (confirm($("#delete_record").val())) {
-       if($("#demo").val()=='1'){
+       if($("#demo").val()=='0'){
             window.location.href = url;
        }
        else{
            disablebtn();
         }
-        
+
     } else {
         window.location.reload();
     }
@@ -180,7 +180,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/appointmenttable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'doctor_name' , name:'doctor_name'},
             {data: 'patient_name' , name:'patient_name'},
             {data: 'date' , name:'date'},
@@ -201,7 +201,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/compaintable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'username' , name:'username'},
             {data: 'title' , name:'title'},
             {data: 'description' , name:'description'},
@@ -220,7 +220,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/latsrappointmenttable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'doctor_name' , name:'doctor_name'},
             {data: 'patient_name' , name:'patient_name'},
             {data: 'date' , name:'date'},
@@ -246,7 +246,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/notificationtable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'message' , name:'message'}
         ],
         order: [
@@ -264,7 +264,7 @@ $(document).ready(function() {
      function readURL(input,field) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-            
+
             reader.onload = function (e) {
                 $("#basic_img1").val(e.target.result);
                 $('#'+field).attr('src', e.target.result);
@@ -294,7 +294,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/reviewtable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'doctor_name' , name:'doctor_name'},
             {data: 'username'  , name: 'username'},
             {data: 'ratting' , name:'ratting'},
@@ -315,8 +315,8 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/doctorstable',
         columns: [
-            {data: 'id'    , name: 'id'},  
-            {data: 'image'  , name: 'image'},          
+            {data: 'id'    , name: 'id'},
+            {data: 'image'  , name: 'image'},
             {data: 'name' , name:'name'},
             {data: 'email'  , name: 'email'},
             {data: 'phone'  , name: 'phone'},
@@ -328,12 +328,12 @@ $(document).ready(function () {
               render: function(data) {
                     return '<img src="'+data+'" height="50">';
               }
-            }   
+            }
         ],
         order: [
                 [0, "desc"]
             ]
-         
+
     });
 });
 $(document).ready(function () {
@@ -342,7 +342,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/lastestordertable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'name' , name:'name'},
             {data: 'email'  , name: 'email'},
             {data: 'payment_type' , name:'payment_type'},
@@ -363,7 +363,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/userstable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'name' , name:'name'},
             {data: 'email'  , name: 'email'},
             {data: 'phone' , name:'phone'},
@@ -380,7 +380,7 @@ $(document).ready(function () {
         serverSide: true,
         ajax: $("#siteurl").val()+'/contacttable',
         columns: [
-            {data: 'id'    , name: 'id'},            
+            {data: 'id'    , name: 'id'},
             {data: 'name' , name:'name'},
             {data: 'email'  , name: 'email'},
             {data: 'subject' , name:'subject'},
@@ -440,7 +440,7 @@ function checkduration(day_id,cid){
                 });
             }
     }
-   
+
 }
 
 function getslot(value,day_id,cid){
@@ -477,12 +477,12 @@ function getslot(value,day_id,cid){
                 }else{
                     alert($("#selduration").val());
                 }
-                
+
             }
-    }       
-           
+    }
+
 }
- 
+
  function GetHours(d) {
     var h = parseInt(d.split(':')[0]);
     if (d.split(':')[1].split(' ')[1] == "PM") {
@@ -513,8 +513,8 @@ function removescdehule(day_id,cid){
             var audioElement = document.createElement('audio');
             audioElement.autoplay = true;
             audioElement.load();
-            audioElement.addEventListener("load", function() { 
-                audioElement.play(); 
+            audioElement.addEventListener("load", function() {
+                audioElement.play();
             }, true);
             audioElement.src = source;
         }
@@ -534,12 +534,12 @@ function removescdehule(day_id,cid){
                                 $('#bell-animation').addClass('icon-anim-pulse');
                                 $('.notification-badge').addClass('badge-danger');
                                 play_sound();
-                               
+
                             } else{
                                 document.getElementById("ordercount").innerHTML=0;
                                 document.getElementById("notificationmsg").innerHTML="You have not any pending orders";
                                    document.getElementById("notificationshow").style.display="none";
-                               
+
                             }
                         } else {
                              document.getElementById("ordercount").innerHTML=0;
@@ -568,7 +568,7 @@ function removescdehule(day_id,cid){
                     if(resp.status == 200){
                         $('#notification-data').html(data.data);
                       //  document.getElementById("notify").style.display="none";
-                        
+
                         $('#bell-animation').removeClass('icon-anim-pulse');
                         $('.notification-badge').removeClass('badge-danger');
                     }

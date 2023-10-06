@@ -9,4 +9,3 @@ class Services extends Model
     protected $table = 'services';
     protected $primaryKey = 'id';
 }
-?>
