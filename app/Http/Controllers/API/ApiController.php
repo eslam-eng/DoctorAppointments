@@ -309,7 +309,7 @@ class ApiController extends Controller
 
                     $inset->connectycube_user_id = $user_id;
                     $inset->login_id = $login_field;
-                    $inset->connectycube_password = $request->get("password");
+                    $inset->connectycube_password =" $request->get("password")";
                     $inset->save();
                     $connrctcube = ($inset->connectycube_user_id);
 
@@ -323,7 +323,7 @@ class ApiController extends Controller
                         $inset->save();
                         $store=TokenData::where("token",$request->get("token"))->update(["user_id"=>$inset->id]);
                         $response['success']="1";
-                        $response['register']=array("user_id"=>$inset->id,"name"=>$request->get("name"),"phone"=>$inset->phone,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$login_field,"connectycube_password"=>$inset->connectycube_password);
+                        $response['register']=array("user_id"=>$inset->id,"name"=>$request->get("name"),"phone"=>$inset->phone,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$login_field,"connectycube_password"=>"$inset->connectycube_password");
                     }
                 }
 
@@ -414,7 +414,7 @@ class ApiController extends Controller
                        }
                        $response['success']="1";
                        $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)$getuser->connectycube_password);
+                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)"$getuser->connectycube_password");
                 }
                 else{//in vaild user
                      $data=Patient::where("phone",$request->get("phone"))->first();
@@ -465,7 +465,7 @@ class ApiController extends Controller
                        }
                        $response['success']="1";
                        $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)$getuser->connectycube_password);
+                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)"$getuser->connectycube_password");
                 }
                 else{//register patient
 
@@ -529,7 +529,7 @@ class ApiController extends Controller
                     }
                     $response['success']="1";
                     $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                    $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)$getuser->connectycube_password);
+                    $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)"$getuser->connectycube_password");
                 }
             }else{
                 $data=Patient::where("phone",$request->get("phone"))->first();
@@ -605,7 +605,7 @@ class ApiController extends Controller
 
                     $inset->connectycube_user_id = $user_id;
                     $inset->login_id = $login_field;
-                    $inset->connectycube_password = $request->get("password");
+                    $inset->connectycube_password = (string)$request->get("password");
                     $inset->save();
 
                     $connrctcube = ($inset->connectycube_user_id);
@@ -620,7 +620,7 @@ class ApiController extends Controller
                         $inset->save();
                         $store=TokenData::where("token",$request->get("token"))->update(["user_id"=>$inset->id]);
                         $response['success']="1";
-                        $response['register']=array("user_id"=>$inset->id,"name"=>$inset->name,"phone"=>$inset->phoneno,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$inset->login_id,"connectycube_password"=>$inset->connectycube_password,"profile_pic"=>"");
+                        $response['register']=array("user_id"=>$inset->id,"name"=>$inset->name,"phone"=>$inset->phoneno,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$inset->login_id,"connectycube_password"=>"$inset->connectycube_password","profile_pic"=>"");
                     }
 
            }else{
@@ -671,7 +671,7 @@ class ApiController extends Controller
                                 $image=asset("public/upload/profile/profile.png");
                                 }
                    $response['success']="1";
-                   $response['register']=array("doctor_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"login_id"=>$getuser->login_id,"connectycube_user_id"=>$getuser->connectycube_user_id,"profile_pic"=>$image,"connectycube_password"=>$getuser->connectycube_password);
+                   $response['register']=array("doctor_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"login_id"=>$getuser->login_id,"connectycube_user_id"=>$getuser->connectycube_user_id,"profile_pic"=>$image,"connectycube_password"=>"$getuser->connectycube_password");
 
            }
            else{//in vaild user
