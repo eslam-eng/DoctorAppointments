@@ -501,7 +501,7 @@ class ApiController extends Controller
 
                     $getuser->connectycube_user_id = $user_id;
                     $getuser->login_id = $login_field;
-                    $getuser->connectycube_password = $password;
+                    $getuser->connectycube_password =(string) "$password";
                     $getuser->save();
                     $connrctcube = ($getuser->connectycube_user_id);
 
@@ -533,10 +533,10 @@ class ApiController extends Controller
                 $data=Patient::where("phone",$request->get("phone"))->first();
                 if($data){
                     $response['success']="0";
-                    $response['register']="Invaild Phone Number";
+                    $response['register']="Invalid Phone Number";
                 }else{
                     $response['success']="0";
-                    $response['register']="Invaild Login Type";
+                    $response['register']="Invalid Login Type";
                 }
             }
         }
