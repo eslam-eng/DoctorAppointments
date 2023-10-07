@@ -309,7 +309,7 @@ class ApiController extends Controller
 
                     $inset->connectycube_user_id = $user_id;
                     $inset->login_id = $login_field;
-                    $inset->connectycube_password =" $request->get("password")";
+                    $inset->connectycube_password = (string)$request->get("password");
                     $inset->save();
                     $connrctcube = ($inset->connectycube_user_id);
 
