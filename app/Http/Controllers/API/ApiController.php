@@ -40,6 +40,8 @@ use DateTime;
 use DateInterval;
 
 use Carbon\Carbon;
+use function GuzzleHttp\Psr7\str;
+
 class ApiController extends Controller
 {
     public function change_password_doctor(Request $request){
@@ -412,7 +414,7 @@ class ApiController extends Controller
                        }
                        $response['success']="1";
                        $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>$getuser->connectycube_password);
+                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)$getuser->connectycube_password);
                 }
                 else{//in vaild user
                      $data=Patient::where("phone",$request->get("phone"))->first();
@@ -463,7 +465,7 @@ class ApiController extends Controller
                        }
                        $response['success']="1";
                        $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>$getuser->connectycube_password);
+                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)$getuser->connectycube_password);
                 }
                 else{//register patient
 
@@ -527,7 +529,7 @@ class ApiController extends Controller
                     }
                     $response['success']="1";
                     $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                    $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>$getuser->connectycube_password);
+                    $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)$getuser->connectycube_password);
                 }
             }else{
                 $data=Patient::where("phone",$request->get("phone"))->first();
