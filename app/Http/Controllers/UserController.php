@@ -65,7 +65,7 @@ class UserController extends Controller
 
             $store->connectycube_user_id = $user_id;
             $store->login_id = $login_field;
-            $store->connectycube_password = "$request->get("password")";
+            $store->connectycube_password =(string) $request->get("password");
             $store->save();
 
             $connrctcube = ($store->connectycube_user_id);
