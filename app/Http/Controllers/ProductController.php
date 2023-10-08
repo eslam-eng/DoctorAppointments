@@ -142,12 +142,10 @@ class ProductController extends Controller
                         }
                         $bookappointment = BookAppointment::where("doctor_id", $doctor->id)->delete();
                         $review = Review::where("doc_id", $doctor->id)->delete();
-                        $image_path = public_path() . "/upload/doctors/" . $doctor->image;
-                        if (file_exists($image_path)) {
-                            try {
+                        if (isset($doctor->image)) {
+                            $image_path = public_path() . "/upload/doctors/" . $doctor->image;
+                            if (file_exists($image_path))
                                 unlink($image_path);
-                            } catch (Exception $e) {
-                            }
                         }
                         $doctor->delete();
                     }
