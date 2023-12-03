@@ -32,7 +32,7 @@ class UserController extends Controller
 
     public function userpostregister(Request $request){
      //   dd($request->all());
-
+     
      $this->validate($request,[
           'email' =>'required|unique:patient',
           'phone' => 'required|unique:patient',
@@ -40,58 +40,59 @@ class UserController extends Controller
           'password' => 'required|min:6',
           'password_confirmation' => 'required|min:6|same:password',
           'agree' => 'required',
-
+          
        ]);
-
+       
         $getuser=Patient::where("email",$request->get("email"))->first();
         if($getuser){
-            Session::flash('message',__("message.Email Already Existe"));
+            Session::flash('message',__("message.Email Already Existe")); 
             Session::flash('alert-class', 'alert-danger');
             return redirect()->back();
         }else{
             $login_field = "";
             $user_id = "";
-
+                    
             $store=new Patient();
             $store->name=$request->get("name");
             $store->email=$request->get("email");
             $store->password=$request->get("password");
             $store->phone=$request->get("phone");
-
+            
             if(env('ConnectyCube')==true){
                   $login_field = $request->get("phone").rand()."#1";
                   $user_id = $this->signupconnectycude($request->get("name"),$request->get("password"),$request->get("email"),$request->get("phone"),$login_field);
             }
-
+            
             $store->connectycube_user_id = $user_id;
             $store->login_id = $login_field;
-            $store->connectycube_password =(string) $request->get("password");
-            $store->save();
-
+            $store->connectycube_password = $request->get("password");
+            
+            
             $connrctcube = ($store->connectycube_user_id);
             if($connrctcube == "0-email must be unique"){
-
-                Session::flash('message',__("email or password allready added in ConnectCube"));
+                    
+                Session::flash('message',__("email or password allready added in ConnectCube")); 
                 Session::flash('alert-class', 'alert-danger');
                 return redirect()->back();
             }
             else
-            {
+            {     
+                $store->save();
                 if($request->get("rem_me")==1){
                             setcookie('email', $request->get("email"), time() + (86400 * 30), "/");
                             setcookie('password',$request->get("password"), time() + (86400 * 30), "/");
                             setcookie('rem_me',1, time() + (86400 * 30), "/");
-                }
-
-                Session::put("user_id",$store->id);
+                } 
+                
+                Session::put("user_id",$store->id);                
                 Session::put("role_id",'1');
-                Session::flash('message',__("Successful Register"));
+                Session::flash('message',__("Successful Register")); 
                 Session::flash('alert-class', 'alert-success');
                 return redirect("userdashboard");
             }
         }
     }
-
+    
     public function postloginuser(Request $request){
         $this->validate($request,[
              'email' =>'required',
@@ -100,18 +101,19 @@ class UserController extends Controller
         ]);
 
         $getUser=Patient::where("email",$request->get("email"))->where("password",$request->get("password"))->first();
+       
         if($getUser){
                 if($request->get("rem_me")==1){
                         setcookie('email', $request->get("email"), time() + (86400 * 30), "/");
                         setcookie('password',$request->get("password"), time() + (86400 * 30), "/");
                         setcookie('rem_me',1, time() + (86400 * 30), "/");
-                }
+                } 
 
-                Session::put("user_id",$getUser->id);
+                Session::put("user_id",$getUser->id);                
                 Session::put("role_id",'1');
                 return redirect("userdashboard");
         }else{
-            Session::flash('message',__("message.Login Credentials Are Wrong"));
+            Session::flash('message',__("message.Login Credentials Are Wrong")); 
             Session::flash('alert-class', 'alert-danger');
             return redirect("patientlogin");
         }
@@ -140,7 +142,7 @@ class UserController extends Controller
                    }else{
                       $b->department_name="";
                    }
-
+                  
               }else{
                    $b->department_name="";
               }
@@ -154,7 +156,7 @@ class UserController extends Controller
        }else{
           return redirect("/");
        }
-
+       
     }
 
     public function logout(){
@@ -164,7 +166,7 @@ class UserController extends Controller
     }
 
     public function makeappointment(Request $request){
-    //  dd($request->all());
+   
         $this->validate($request, [
             "date"    => "required",
             "slot"    => "required",
@@ -174,19 +176,19 @@ class UserController extends Controller
         $slot=explode("#",$request->get("slot"));
         $getappointment=BookAppointment::where("date",date("Y-m-d",strtotime($request->get("date"))))->where("slot_id",isset($slot[0])?$slot[0]:"")->first();
         if($getappointment){
-            Session::flash('message',__('message.Slot Already Booked'));
+            Session::flash('message',__('message.Slot Already Booked')); 
             Session::flash('alert-class', 'alert-danger');
             return redirect()->back();
         }else{
 
-            if($request->get("payment_type")=="Stripe"){
-
+            if($request->get("payment_type")=="stripe"){
+                
                 \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-                $unique_id = uniqid();
+                $unique_id = uniqid(); 
                 $charge = \Stripe\Charge::create(array(
                        'description' => "Amount: ".$request->get("consultation_fees").' - '. $unique_id,
-                       'source' => $request->get("stripeToken"),
-                       'amount' => (int)($request->get("consultation_fees") * 100),
+                       'source' => $request->get("stripeToken"),                    
+                       'amount' => (int)($request->get("consultation_fees") * 100), 
                        'currency' => env('STRIPE_CURRENCY')
                 ));
 
@@ -212,14 +214,14 @@ class UserController extends Controller
                     $store->payment_date = $date->format('Y-m-d');
                     $store->doctor_id = $data->doctor_id;
                     $store->amount = $request->get("consultation_fees");
-                    $store->save();
+                    $store->save(); 
                     DB::commit();
-                    Session::flash('message',__('message.Appointment Book Successfully'));
+                    Session::flash('message',__('message.Appointment Book Successfully')); 
                     Session::flash('alert-class', 'alert-success');
                     return redirect()->back();
                 }catch (\Exception $e) {
                           DB::rollback();
-                          Session::flash('message',$e);
+                          Session::flash('message',$e); 
                           Session::flash('alert-class', 'alert-danger');
                           return redirect()->back();
                 }
@@ -266,12 +268,12 @@ class UserController extends Controller
                               $store->amount = $request->get("consultation_fees");
                               $store->save();
                               DB::commit();
-                              Session::flash('message',__('message.Appointment Book Successfully'));
+                              Session::flash('message',__('message.Appointment Book Successfully')); 
                               Session::flash('alert-class', 'alert-success');
                               return redirect()->back();
                       }catch (\Exception $e) {
                               DB::rollback();
-                              Session::flash('message',$e);
+                              Session::flash('message',$e); 
                               Session::flash('alert-class', 'alert-danger');
                               return redirect()->back();
                       }
@@ -280,13 +282,14 @@ class UserController extends Controller
                         foreach($result->errors->deepAll() as $error) {
                             $errorString .= 'Error: ' . $error->code . ": " . $error->message . "\n";
                         }
-                        Session::flash('message',$errorString);
+                        Session::flash('message',$errorString); 
                         Session::flash('alert-class', 'alert-danger');
                         return redirect()->back();
                 }
             }
-            else if($request->get("payment_type")=="COD"){
-
+            else if($request->get("payment_type")=="cod"){
+                
+             
                 DB::beginTransaction();
                 try {
                       $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
@@ -312,27 +315,31 @@ class UserController extends Controller
                       $store->amount = $request->get("consultation_fees");
                       $store->save();
                       DB::commit();
-                      Session::flash('message',__('message.Appointment Book Successfully'));
+                      Session::flash('message',__('message.Appointment Book Successfully')); 
                       Session::flash('alert-class', 'alert-success');
                       return redirect()->back();
                 }catch (\Exception $e) {
                       DB::rollback();
-                      Session::flash('message',$e);
+                      Session::flash('message',$e); 
                       Session::flash('alert-class', 'alert-danger');
                       return redirect()->back();
                 }
-
+                
             }
             else if($request->get("payment_type")=="Flutterwave"){
+               
                 $reference = Flutterwave::generateReference();
+                 
                 $data1 = PaymentGatewayDetail::where("gateway_name","rave")->get();
-                $arr = array();
+              
+                $arr = array(); 
                 foreach ($data1 as $k) {
                         $arr[$k->gateway_name."_".$k->key] = $k->value;
                 }
-
+                  
                     $user = Session::get("user_id");
                     $userinfo = Patient::find($user);
+                  
                     $data = [
                                 'payment_options' => 'card,banktransfer',
                                 'amount' => $request->get("consultation_fees"),
@@ -345,21 +352,18 @@ class UserController extends Controller
                                     "phonenumber" => $request->get("phone_no"),
                                     "name" => $userinfo->name
                                 ],
-
+                    
                                 "customizations" => [
                                     "title" => 'Book Appointment',
                                     "description" => "Book Appointment"
                                 ]
                     ];
-
-                $payment = Flutterwave::initializePayment($data);
+                    
+                $payment = Flutterwave::initializePayment($data); 
                 // echo "<pre>";print_r($payment);exit;
-
-
-                DB::beginTransaction();
-                try {
+                
+                 
                           $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
-
                           $data=new BookAppointment();
                           $data->user_id=Session::get("user_id");
                           $data->doctor_id=$request->get("doctor_id");
@@ -380,37 +384,34 @@ class UserController extends Controller
                           $store->amount = $request->get("consultation_fees");
                           $store->save();
                           DB::commit();
-
-                }catch (\Exception $e) {
-                          DB::rollback();
-
-                }
+                         
+                
                 if ($payment['status'] !== 'success') {
                     return redirect()->route('payment-failed');
-                    Session::flash('message',$errorString);
+                    Session::flash('message',$errorString); 
                     Session::flash('alert-class', 'alert-danger');
                     return redirect()->back();
                 }else{
                     return redirect($payment['data']['link']);
-
+                   
                 }
-
+               
             }
             else if($request->get("payment_type")=="Razorpay"){
                 $data1 = PaymentGatewayDetail::where("gateway_name","razorpay")->get();
-                $arr = array();
+                $arr = array(); 
                 if(count($data1)>0){
                     foreach ($data1 as $k) {
                         $arr[$k->gateway_name."_".$k->key] = $k->value;
                     }
                 }
                 // echo "<pre>";print_r($arr);exit;
-                $input = $request->all();
-
+                $input = $request->all();    
+                
                 // $api = new Api($arr['razorpay_razorpay_key'],$arr['razorpay_razorpay_secert']);
                 // $payment = $api->payment->fetch($request->get('razorpay_payment_id'));
-                // $response = $api->payment->fetch($request->get('razorpay_payment_id'))->capture(array('amount'=>(int)$amount*100));
-
+                // $response = $api->payment->fetch($request->get('razorpay_payment_id'))->capture(array('amount'=>(int)$amount*100)); 
+               
                 DB::beginTransaction();
                 try {
                       $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
@@ -436,19 +437,19 @@ class UserController extends Controller
                       $store->amount = $request->get("consultation_fees");
                       $store->save();
                       DB::commit();
-                      Session::flash('message',__('message.Appointment Book Successfully'));
+                      Session::flash('message',__('message.Appointment Book Successfully')); 
                       Session::flash('alert-class', 'alert-success');
                       return redirect()->back();
                 }catch (\Exception $e) {
                       DB::rollback();
-                      Session::flash('message',$e);
+                      Session::flash('message',$e); 
                       Session::flash('alert-class', 'alert-danger');
                       return redirect()->back();
                 }
-            }
+            }  
             else if($request->get("payment_type")=="Paytm"){
-
-
+               
+                
                 DB::beginTransaction();
                 try {
                       $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
@@ -463,7 +464,7 @@ class UserController extends Controller
                       $data->user_description=$request->get("message");
                       $data->payment_mode="Paytm";
                       $data->consultation_fees = $request->get("consultation_fees");
-
+                      
                       $data->save();
                       $store = new Settlement();
                       $store->book_id = $data->id;
@@ -472,10 +473,10 @@ class UserController extends Controller
                       $store->doctor_id = $data->doctor_id;
                       $store->amount = $request->get("consultation_fees");
                       $store->save();
-
+                      
                         $data1 = PaymentGatewayDetail::where("gateway_name","paytm")->get();
-                        $arr = array();
-
+                        $arr = array(); 
+                
                         if(count($data1)>0){
                             foreach ($data1 as $k) {
                                 $arr[$k->gateway_name."_".$k->key] = $k->value;
@@ -492,34 +493,34 @@ class UserController extends Controller
                             'email' => 'redixbit.user10@gmail.com',
                             'amount' => $amount,
                             'callback_url' => route('paytmstatus')
-                        ]);
-
+                        ]);   
+                
                       DB::commit();
                       return $payment->receive();
-
+                      
                 }catch (\Exception $e) {
                       DB::rollback();
-                      Session::flash('message',$e);
+                      Session::flash('message',$e); 
                       Session::flash('alert-class', 'alert-danger');
                       return redirect()->back();
                 }
-            }
+            } 
             else if($request->get("payment_type")=="Paystack"){
-
+                
                 $data1 = PaymentGatewayDetail::where("gateway_name","paystack")->get();
-
-                $arr = array();
+                
+                $arr = array(); 
                 foreach ($data1 as $k) {
                         $arr[$k->gateway_name."_".$k->key] = $k->value;
                 }
-
-
+                  
+               
                 $curl = curl_init();
                 $email = 'admin@gmail.com';
                 $amount = $request->get("consultation_fees");
                 $callback_url = route('paystack_callback');
                 // echo "<pre>";print_r($amount);exit;
-
+                            
                   curl_setopt_array($curl, array(
                     CURLOPT_URL => "https://api.paystack.co/transaction/initialize",
                     CURLOPT_RETURNTRANSFER => true,
@@ -530,7 +531,7 @@ class UserController extends Controller
                       'callback_url' => $callback_url
                     ]),
                     CURLOPT_HTTPHEADER => [
-                      "authorization: Bearer ".$arr['paystack_secert_key']."",
+                      "authorization: Bearer ".$arr['paystack_secert_key']."", 
                       "content-type: application/json",
                       "cache-control: no-cache"
                     ],
@@ -540,14 +541,14 @@ class UserController extends Controller
                   if($err){
                     die('Curl returned error: ' . $err);
                   }
-                  $tranx = json_decode($response, true);
+                  $tranx = json_decode($response, true);   
                 //   echo "<pre>";print_r($tranx);exit;
-
-                if($tranx['data']['reference']){
+                            
+                if($tranx['data']['reference']){  
                     DB::beginTransaction();
                     try {
                           $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
-
+    
                           $data=new BookAppointment();
                           $data->user_id=Session::get("user_id");
                           $data->doctor_id=$request->get("doctor_id");
@@ -569,27 +570,27 @@ class UserController extends Controller
                           $store->amount = $request->get("consultation_fees");
                           $store->save();
                           DB::commit();
-
+                             
                     }catch (\Exception $e) {
                               DB::rollback();
                     }
                 }else{
                     die('something getting worng');
                 }
-
+           
                 if(!$tranx['status']){
                     print_r('API returned error: ' . $tranx['message']);
                 }
                 return Redirect($tranx['data']['authorization_url']);
-
+             
             }
         }
     }
-
-    // public function paystack_callback(Request $request){
+    
+    // public function paystack_callback(Request $request){      
     //   $data1 = PaymentGatewayDetail::where("gateway_name","paystack")->get();
-
-    //   $arr = array();
+      
+    //   $arr = array(); 
     //   foreach ($data1 as $k) {
     //         $arr[$k->gateway_name."_".$k->key] = $k->value;
     //   }
@@ -603,7 +604,7 @@ class UserController extends Controller
     //       CURLOPT_RETURNTRANSFER => true,
     //       CURLOPT_HTTPHEADER => [
     //         "accept: application/json",
-    //         "authorization: Bearer ".$arr['paystack_secert_key']."",
+    //         "authorization: Bearer ".$arr['paystack_secert_key']."", 
     //         "cache-control: no-cache"
     //       ],
     //     ));
@@ -637,12 +638,12 @@ class UserController extends Controller
     //             $android=$this->send_notification_android($user->android_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
     //             $ios=$this->send_notification_IOS($user->ios_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
     //             try {
-    //                     $user=Doctors::find($request->get("doctor_id"));
-
+    //                     $user=Doctors::find($request->get("doctor_id")); 
+                            
     //                     $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
     //                         $message->to($user->email,$user->name)->subject(__('message.System Name'));
     //                     });
-
+                                          
     //             } catch (\Exception $e) {
     //             }
     //         }
@@ -655,31 +656,31 @@ class UserController extends Controller
     //             $data->save();
     //         }
     //         $doctor_id = $data->doctor_id;
-    //         Session::flash('message',__('message.Appointment Book Successfully'));
+    //         Session::flash('message',__('message.Appointment Book Successfully')); 
     //         Session::flash('alert-class', 'alert-success');
     //         return redirect('viewdoctor/'.$doctor_id);
     //     }else{ //fail
-    //         Session::flash('message',__('message.Something Wrong'));
+    //         Session::flash('message',__('message.Something Wrong')); 
     //         Session::flash('alert-class', 'alert-danger');
     //         return redirect()->back();
     //     }
     // }
-
+    
     public function web_rave_callback(Request $request){
         $transactionID = Flutterwave::getTransactionIDFromCallback();
+      
         $data = Flutterwave::verifyTransaction($transactionID);
-
             $data1 = BookAppointment::where("transaction_id",$data['data']['tx_ref'])->first();
             $data1->is_completed = 1;
-            $data1->save();
-
+            $data1->save();    
+        
         $doctor_id = $data1->doctor_id;
-        Session::flash('message',__('message.Appointment Book Successfully'));
+        Session::flash('message',__('message.Appointment Book Successfully')); 
         Session::flash('alert-class', 'alert-success');
         return redirect('viewdoctor/'.$doctor_id);
     }
-
-
+    
+   
 
     public function userfavorite($doc_id){
         if(Session::has("user_id")&&Session::get("role_id")=='1'){
@@ -695,10 +696,10 @@ class UserController extends Controller
                $store->save();
                $op='1';
                $msg=__('message.Doctor add in Favorite list');
-            }
-            $data=array("msg"=>$msg,"class"=>"alert-success","op"=>$op);
+            }  
+            $data=array("msg"=>$msg,"class"=>"alert-success","op"=>$op); 
         }else{
-            $data=array("msg"=>__('message.Please')." <a href=".url('patientlogin').">".__('message.Login')."</a> ".__('message.Your Account')."","class"=>"alert-danger","op"=>'0');
+            $data=array("msg"=>__('message.Please')." <a href=".url('patientlogin').">".__('message.Login')."</a> ".__('message.Your Account')."","class"=>"alert-danger","op"=>'0'); 
         }
 
         return json_encode($data);
@@ -709,7 +710,7 @@ class UserController extends Controller
           $setting=Setting::find(1);
           $userdata=Patient::find(Session::get('user_id'));
           $userfavorite=FavoriteDoc::with("doctorls")->where("user_id",Session::get("user_id"))->paginate(9);
-          foreach ($userfavorite as $k) {
+          foreach ($userfavorite as $k) {  
                 if($k->doctorls){
                     $k->doctorls->avgratting=Review::where('doc_id',$k->doctor_id)->avg('rating');
                     $k->doctorls->totalreview=count(Review::where('doc_id',$k->doctor_id)->get());
@@ -720,9 +721,9 @@ class UserController extends Controller
                     }else{
                         $k->doctorls->department_name="";
                     }
-
+                           
                 }
-          }
+          }   
           return view("user.patient.favourite")->with("userdata",$userdata)->with("setting",$setting)->with("userfavorite",$userfavorite);
        }
        else{
@@ -733,18 +734,18 @@ class UserController extends Controller
     public function viewschedule(){
        if(Session::get("user_id")!=""&&Session::get("role_id")=='1'){
           $setting=Setting::find(1);
-          $userdata=Patient::find(Session::get('user_id'));
+          $userdata=Patient::find(Session::get('user_id'));          
           return view("user.patient.scheduleappointment")->with("userdata",$userdata)->with("setting",$setting);
        }
        else{
           return redirect('/');
        }
     }
-
+    
     public function viewappointment($id){
         if(Session::get("user_id")!=""&&Session::get("role_id")=='1'){
           $setting=Setting::find(1);
-          $userdata=Patient::find(Session::get('user_id'));
+          $userdata=Patient::find(Session::get('user_id')); 
           $viewappointment = BookAppointment::with('doctorls')->find($id);
           return view("user.doctor.viewappoint")->with("userdata",$userdata)->with("setting",$setting)->with("viewappointment",$viewappointment);
        }
@@ -780,7 +781,7 @@ class UserController extends Controller
           $data=Patient::find(Session::get("user_id"));
           $data->password=$request->get("npwd");
           $data->save();
-          Session::flash('message',__('message.Password Change Successfully'));
+          Session::flash('message',__('message.Password Change Successfully')); 
           Session::flash('alert-class', 'alert-success');
           return redirect()->back();
     }
@@ -818,14 +819,14 @@ class UserController extends Controller
       $user=Patient::find(Session::get("user_id"));
       $findemail=Patient::where("email",$request->get("email"))->where("id","!=",Session::get("user_id"))->first();
       if($findemail){
-           Session::flash('message',__('message.Email Id Already Use By Other User'));
+           Session::flash('message',__('message.Email Id Already Use By Other User')); 
            Session::flash('alert-class', 'alert-danger');
            return redirect()->back();
       }else{
 
            $img=$user->profile_pic;
            $rel_url=$user->profile_pic;
-           if ($request->hasFile('image'))
+           if ($request->hasFile('image')) 
               {
                   $file = $request->file('image');
                   $filename = $file->getClientOriginalName();
@@ -834,14 +835,14 @@ class UserController extends Controller
                   $picture = time() . '.' . $extension;
                   $destinationPath = public_path() . $folderName;
                   $request->file('image')->move($destinationPath, $picture);
-                  $img =$picture;
+                  $img =$picture;                
                   $image_path = public_path() ."/upload/profile/".$rel_url;
                   if(file_exists($image_path)&&$rel_url!="") {
                       try {
                             unlink($image_path);
                       }catch(Exception $e) {
-
-                      }
+                                                  
+                      }                        
                   }
             }
            $user->name=$request->get("name");
@@ -849,14 +850,14 @@ class UserController extends Controller
            $user->phone=$request->get("phone");
            $user->profile_pic=$img;
            $user->save();
-           Session::flash('message',__('message.Password Change Successfully'));
+           Session::flash('message',__('message.Profile Update Successfully')); 
            Session::flash('alert-class', 'alert-success');
            return redirect()->back();
       }
       //dd($request->all());
     }
-
-
+    
+    
       public function resetpassword($code){
             $setting = Setting::find(1);
             $data=Resetpassword::where("code",$code)->first();
@@ -882,12 +883,12 @@ class UserController extends Controller
                 return view('user.pwdsucess')->with("msg",__('message.pwd_reset'))->with("setting",$setting);
             }
       }
-
+      
       public function send_notification_android($key,$msg,$id,$field,$order_id){
         $getuser=TokenData::where("type",1)->where($field,$id)->get();
-
+        
         $i=0;
-        if(count($getuser)!=0){
+        if(count($getuser)!=0){   
 
                $reg_id = array();
                foreach($getuser as $gt){
@@ -895,7 +896,7 @@ class UserController extends Controller
                }
                $regIdChunk=array_chunk($reg_id,1000);
                foreach ($regIdChunk as $k) {
-                       $registrationIds =  $k;
+                       $registrationIds =  $k;    
                         $message = array(
                             'message' => $msg,
                             'title' =>  __('message.notification')
@@ -913,14 +914,14 @@ class UserController extends Controller
                           'data'              => $message1,
                           'notification'      =>$message1
                        );
-
+                       
                       // echo "<pre>";print_r($fields);exit;
                        $url = 'https://fcm.googleapis.com/fcm/send';
                        $headers = array(
                          'Authorization: key='.$key,// . $api_key,
                          'Content-Type: application/json'
                        );
-                      $json =  json_encode($fields);
+                      $json =  json_encode($fields);   
                       $ch = curl_init();
                       curl_setopt($ch, CURLOPT_URL, $url);
                       curl_setopt($ch, CURLOPT_POST, true);
@@ -928,11 +929,11 @@ class UserController extends Controller
                       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                       curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
-                      $result = curl_exec($ch);
+                      $result = curl_exec($ch);   
                       //echo "<pre>";print_r($result);exit;
                       if ($result === FALSE){
                          die('Curl failed: ' . curl_error($ch));
-                      }
+                      }     
                      curl_close($ch);
                      $response[]=json_decode($result,true);
                }
@@ -951,18 +952,18 @@ class UserController extends Controller
         }
         return 0;
      }
-
+     
     public function send_notification_IOS($key,$msg,$id,$field,$order_id){
       $getuser=TokenData::where("type",2)->where($field,$id)->get();
-         if(count($getuser)!=0){
+         if(count($getuser)!=0){               
                $reg_id = array();
                foreach($getuser as $gt){
                    $reg_id[]=$gt->token;
                }
-
+                
               $regIdChunk=array_chunk($reg_id,1000);
                foreach ($regIdChunk as $k) {
-                       $registrationIds =  $k;
+                       $registrationIds =  $k;    
                        $message = array(
                             'message' => $msg,
                             'title' =>  __('message.notification')
@@ -984,7 +985,7 @@ class UserController extends Controller
                          'Authorization: key='.$key,// . $api_key,
                          'Content-Type: application/json'
                        );
-                      $json =  json_encode($fields);
+                      $json =  json_encode($fields);   
                       $ch = curl_init();
                       curl_setopt($ch, CURLOPT_URL, $url);
                       curl_setopt($ch, CURLOPT_POST, true);
@@ -992,10 +993,10 @@ class UserController extends Controller
                       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                       curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
-                      $result = curl_exec($ch);
+                      $result = curl_exec($ch);   
                       if ($result === FALSE){
                          die('Curl failed: ' . curl_error($ch));
-                      }
+                      }     
                      curl_close($ch);
                      $response[]=json_decode($result,true);
                }

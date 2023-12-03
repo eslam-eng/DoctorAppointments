@@ -88,7 +88,7 @@
                                     <div class="clinic-block-one">
                                         <div class="inner-box">
                                             <div class="pattern">
-                                                <div class="pattern-1" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-24.png')}}');"></div>
+                                                <div class="pattern-1" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-24.png')}}');"></div>
                                                 <div class="pattern-2" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-25.png')}}');"></div>
                                             </div>
                                             <figure class="image-box">

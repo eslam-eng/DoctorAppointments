@@ -33,25 +33,23 @@ use App\Models\Setting;
 use App\Models\Subscriber;
 use App\Models\Banner;
 use App\Models\About;
-use App\Models\Privecy;
+use App\Models\Privecy; 
 use Hash;
 use Mail;
 use DateTime;
 use DateInterval;
 
 use Carbon\Carbon;
-use function GuzzleHttp\Psr7\str;
-
 class ApiController extends Controller
 {
     public function change_password_doctor(Request $request){
         $response = array("status" => "0", "register" => "Validation error");
            $rules = [
-                      'doctor_id' => 'required' ,
-                      'old_password' => 'required' ,
-                      'new_password' => 'required' ,
-                      'conf_password' => 'required'
-                    ];
+                      'doctor_id' => 'required' ,               
+                      'old_password' => 'required' ,               
+                      'new_password' => 'required' ,               
+                      'conf_password' => 'required'             
+                    ];                    
             $messages = array(
                       'doctor_id.required' => "doctor_id is required",
                       'old_password.required' => "old_password is required",
@@ -69,10 +67,10 @@ class ApiController extends Controller
             } else {
 
                     $data = Doctors::where('id',$request->get("doctor_id"))->first();
-
+                    
                     if($data)
                     {
-
+                        
                       if($data->password == $request->get("old_password"))
                       {
                           if($request->get("new_password") == $request->get("new_password"))
@@ -86,9 +84,9 @@ class ApiController extends Controller
 
                       }else{
                          $response = array("status" =>0, "msg" => "Old password not match");
-                      }
-
-
+                      }    
+                        
+                    
                     }else{
                         $response = array("status" =>0, "msg" => "Doctor id Not Found");
                     }
@@ -100,8 +98,8 @@ class ApiController extends Controller
     public function doctor_subscription_list(Request $request){
         $response = array("status" => "0", "register" => "Validation error");
            $rules = [
-                      'doctor_id' => 'required'
-                    ];
+                      'doctor_id' => 'required'                
+                    ];                    
             $messages = array(
                       'doctor_id.required' => "doctor_id is required"
             );
@@ -116,11 +114,11 @@ class ApiController extends Controller
             } else {
 
                     $data = Doctors::where('id',$request->get("doctor_id"))->first();
-
+                    
                     if($data){
-
+                        
                         $Subscriber = Subscriber::where('doctor_id',$request->get("doctor_id"))->where('is_complet',"1")->where('status',"2")->join( 'doctors', 'doctors.id', '=', 'subscriber.doctor_id' )->join( 'subscription', 'subscription.id', '=', 'subscriber.subscription_id' )->get(['subscriber.status','subscription.month','subscription.price','subscriber.date']);
-
+                        
                         if($Subscriber){
 
                             $ls['doctors_subscription']= $Subscriber;
@@ -129,12 +127,12 @@ class ApiController extends Controller
                             $response['data']=$ls;
 
                         }else{
-
+                        
                             $response = array("status" =>0, "msg" => "Subscription Detail Not Found");
-
+                            
                         }
-
-
+                        
+                    
                      }else{
                         $response = array("status" =>0, "msg" => "Doctor id Not Found");
                      }
@@ -155,7 +153,7 @@ class ApiController extends Controller
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
     }
-
+    
     public function get_all_doctor(Request $request){
         $data = Doctors::take(27)->get();
         $services = Services::all();
@@ -164,12 +162,12 @@ class ApiController extends Controller
         }
         return json_encode(array("services"=>$services,"data"=>$data));
     }
-
+   
     public function showsearchdoctor(Request $request){
         $response = array("status" => "0", "register" => "Validation error");
            $rules = [
-                      'term' => 'required'
-                    ];
+                      'term' => 'required'                
+                    ];                    
             $messages = array(
                       'term.required' => "term is required"
             );
@@ -184,7 +182,7 @@ class ApiController extends Controller
             } else {
                      $data=Doctors::Where('name', 'like', '%' . $request->get("term") . '%')->select("id","name","address","image","department_id")->paginate(10);
                      if($data){
-
+                         
                          foreach ($data as $k) {
                              $dr=Services::find($k->department_id);
                              if($dr){
@@ -192,7 +190,7 @@ class ApiController extends Controller
                              }else{
                                  $k->department_name="";
                              }
-                             $k->image=asset('/upload/doctors').'/'.$k->image;
+                             $k->image=asset('public/upload/doctors').'/'.$k->image;
                             unset($data->department_id);
                          }
                         $response = array("status" =>1, "msg" => "Search Result","data"=>$data);
@@ -208,8 +206,8 @@ class ApiController extends Controller
        $response = array("status" => "0", "register" => "Validation error");
            $rules = [
                       'lat' => 'required',
-                      'lon'=>'required'
-                    ];
+                      'lon'=>'required'               
+                    ];                    
             $messages = array(
                       'lat.required' => "lat is required",
                       'lon.required'=>'lon is requied'
@@ -225,18 +223,18 @@ class ApiController extends Controller
             } else {
                       $lat = $request->get("lat");
                       $lon =  $request->get("lon");
-
+                         
                       $data=DB::table("doctors")
                           ->select("doctors.id","doctors.name","doctors.address","doctors.department_id","doctors.image"
-                              ,DB::raw("6371 * acos(cos(radians(" . $lat . "))
-                              * cos(radians(doctors.lat))
-                              * cos(radians(doctors.lon) - radians(" . $lon . "))
-                              + sin(radians(" .$lat. "))
+                              ,DB::raw("6371 * acos(cos(radians(" . $lat . ")) 
+                              * cos(radians(doctors.lat)) 
+                              * cos(radians(doctors.lon) - radians(" . $lon . ")) 
+                              + sin(radians(" .$lat. ")) 
                               * sin(radians(doctors.lat))) AS distance"))
                               ->orderby('distance')->WhereNotNull("doctors.lat")->paginate(10);
-
+                    
                      if($data){
-
+                        
                          foreach ($data as $k) {
                              $department=Services::find($k->department_id);
                              $k->department_name=isset($department)?$department->name:"";
@@ -247,7 +245,7 @@ class ApiController extends Controller
                      }else{
                         $response = array("status" =>0, "msg" => "No Result Found");
                      }
-
+                    
            }
            return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -262,7 +260,7 @@ class ApiController extends Controller
             'email'=>'required',
             'name'=>'required'
         ];
-
+       
         $messages = array(
             'phone.required' => "Mobile No is required",
             'password.required' => "password is required",
@@ -271,7 +269,7 @@ class ApiController extends Controller
             'email.required'=>'Email is required',
             'name.required'=>'name is required'
         );
-
+       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -284,54 +282,56 @@ class ApiController extends Controller
         } else {
             $getuser=Patient::where("phone",$request->get("phone"))->first();
             if(empty($getuser)){//update token
-
+           
                 $getemail=Patient::where("email",$request->get("email"))->first();
                 if($getemail){
                   $response['success']="0";
                   $response['register']="Email Id Already Register";
                 }
                 else{
-
+                    
                     $login_field = "";
                     $user_id = "";
-
+                    $connectycube_password = "";
+                    
                     $inset=new Patient();
                     $inset->phone=$request->get("phone");
                     $inset->name=$request->get("name");
                     $inset->password=$request->get("password");
                     $inset->email=$request->get("email");
-
+                    
                     if(env('ConnectyCube')==true){
-
+                        
                           $login_field = $request->get("phone").rand()."#1";
                           $user_id = $this->signupconnectycude($request->get("name"),$request->get("password"),$request->get("email"),$request->get("phone"),$login_field);
+                          $connectycube_password = $request->get("password");
                     }
-
+                    
                     $inset->connectycube_user_id = $user_id;
                     $inset->login_id = $login_field;
-                    $inset->connectycube_password = (string)$request->get("password");
-                    $inset->save();
+                    $inset->connectycube_password = $connectycube_password;
+                    
                     $connrctcube = ($inset->connectycube_user_id);
-
+                    
                     if($connrctcube == "0-email must be unique"){
                         $response['success']="0";
                         $response['register']="Email Or Mobile Number Already Register in ConnectCube";
-
+                    
                     }
                     else
                     {
                         $inset->save();
                         $store=TokenData::where("token",$request->get("token"))->update(["user_id"=>$inset->id]);
                         $response['success']="1";
-                        $response['register']=array("user_id"=>$inset->id,"name"=>$request->get("name"),"phone"=>$inset->phone,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$login_field,"connectycube_password"=>"$inset->connectycube_password");
+                        $response['register']=array("user_id"=>$inset->id,"name"=>$request->get("name"),"phone"=>$inset->phone,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$login_field,"connectycube_password"=>$inset->connectycube_password);
                     }
                 }
-
+             
             }else{
                 $response['success']="0";
                 $response['register']="Mobile Number Already Register";
             }
-
+           
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
     }
@@ -355,16 +355,16 @@ class ApiController extends Controller
               $response['success']="1";
               $response['headers']=array("Access-Control-Allow-Origin"=>"*","Access-Control-Allow-Credentials"=>true,"Access-Control-Allow-Headers"=>"Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token","Access-Control-Allow-Methods"=>"POST, OPTIONS,GET");
               $response['register']="Registered";
-
+          
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
    }
-
+   
     public function getalldoctors(){
         $data = Doctors::take(26)->get();
         return Response::json($data);
    }
-
+   
     public function showlogin(Request $request){
         $response = array("success" => "0", "register" => "Validation error");
         $rules = [
@@ -385,7 +385,7 @@ class ApiController extends Controller
                 //   'token.required' => "token is required",
                   'login_type.required' => "login type is required",
                   'name.required' => "name is required"
-        );
+        );       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -414,7 +414,7 @@ class ApiController extends Controller
                        }
                        $response['success']="1";
                        $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)"$getuser->connectycube_password");
+                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>$getuser->connectycube_password);
                 }
                 else{//in vaild user
                      $data=Patient::where("phone",$request->get("phone"))->first();
@@ -425,7 +425,7 @@ class ApiController extends Controller
                           $response['success']="0";
                           $response['register']="Invaild Email";
                      }
-
+                   
                 }
             }
             else if($request->input('login_type')=='2' || $request->input('login_type')=='3' ||$request->input('login_type')=='4'){
@@ -450,7 +450,7 @@ class ApiController extends Controller
                             if(file_exists($image_path)&&$imgdata!="") {
                                 try {
                                       unlink($image_path);
-                                }catch(Exception $e) {}
+                                }catch(Exception $e) {}                        
                             }
                       }
                       $store=TokenData::where("token",$request->get("token"))->first();
@@ -465,15 +465,17 @@ class ApiController extends Controller
                        }
                        $response['success']="1";
                        $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)"$getuser->connectycube_password");
+                       $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>$getuser->connectycube_password);
                 }
-                else{//register patient
-
+                else
+                {//register patient
+                    
                     $login_field = "";
                     $user_id = "";
-
+                    $connectycube_password = "";
+                    
                     $getuser = new Patient();
-
+                    
                     $getuser->login_type = $request->get("login_type");
                     $png_url = "";
                     if($request->get("image")!=""){
@@ -494,69 +496,69 @@ class ApiController extends Controller
                     $getuser->name=$request->get("name");
                     $getuser->password=$password;
                     $getuser->email=$request->get("email");
-
+                    
                     if(env('ConnectyCube')==true){
-
+                        
                           $login_field = $request->get("phone").rand()."#1";
                           $user_id = $this->signupconnectycude($request->get("name"),$password,$request->get("email"),$request->get("phone"),$login_field);
+                          $connectycube_password = $password;
                     }
-
+                    
                     $getuser->connectycube_user_id = $user_id;
                     $getuser->login_id = $login_field;
-                    $getuser->connectycube_password =(string) "$password";
-                    $getuser->save();
-                    $connrctcube = ($getuser->connectycube_user_id);
-
-                    if($connrctcube == "0-email must be unique"){
+                    $getuser->connectycube_password = $connectycube_password;
+                   
+                    
+                    if($user_id == "0-email must be unique"){
                         $response['success']="0";
-                        $response['register']="Email Or Mobile Number Already Register in ConnectCube";
-
+                        $response['register']="Email Already Register in ConnectCube";
                     }
                     else
                     {
-
                         $getuser->save();
                         $store=TokenData::where("token",$request->get("token"))->first();
                         if($store){
                             $store->user_id=$getuser->id;
                             $store->save();
-                        }
+                        }  
                         if($getuser->profile_pic!=""){
                           $image=asset("public/upload/profile").'/'.$getuser->profile_pic;
                         }else{
                             $image=asset("public/upload/profile/profile.png");
                         }
+                        
+                        $response['success']="1";
+                        $response['headers']=array('Access-Control-Allow-Origin'=>'*');
+                        $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>$getuser->connectycube_password);
                     }
-                    $response['success']="1";
-                    $response['headers']=array('Access-Control-Allow-Origin'=>'*');
-                    $response['register']=array("user_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"profile_pic"=>$image,"connectycube_user_id"=>$getuser->connectycube_user_id,"login_id"=>$getuser->login_id,"connectycube_password"=>(string)"$getuser->connectycube_password");
+                  
                 }
             }else{
                 $data=Patient::where("phone",$request->get("phone"))->first();
                 if($data){
                     $response['success']="0";
-                    $response['register']="Invalid Phone Number";
+                    $response['register']="Invaild Phone Number";
                 }else{
                     $response['success']="0";
-                    $response['register']="Invalid Login Type";
+                    $response['register']="Invaild Login Type";
                 }
             }
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
-   }
-
+    }
+   
     public function file_get_contents_curl($url) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);       
 		$data = curl_exec($ch);
 		curl_close($ch);
 		return $data;
 	}
-
+	
     public function doctorregister(Request $request){
       $response = array("success" => "0", "register" => "Validation error");
         $rules = [
@@ -566,7 +568,7 @@ class ApiController extends Controller
             'name'=>'required',
             // 'token' =>'required'
         ];
-
+       
          $messages = array(
                   'phone.required' => "Mobile No is required",
                   'password.required' => "password is required",
@@ -574,7 +576,7 @@ class ApiController extends Controller
                   'email.required'=>'Email is required',
                   'name.required'=>'name is required'
             );
-
+       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -589,45 +591,44 @@ class ApiController extends Controller
            if(empty($getuser)){//update token
                     $login_field = "";
                     $user_id = "";
-
+                    $connectycube_password ="";
+                    
                     $inset=new Doctors();
                     $inset->phoneno=$request->get("phone");
                     $inset->name=$request->get("name");
                     $inset->password=$request->get("password");
                     $inset->email=$request->get("email");
-
-
+                    
+                    
                     if(env('ConnectyCube')==true){
-
+                        
                           $login_field = $request->get("phone").rand()."#2";
                           $user_id = $this->signupconnectycude($request->get("name"),$request->get("password"),$request->get("email"),$request->get("phone"),$login_field);
+                          $connectycube_password = $request->get("password");
                     }
-
+                    
                     $inset->connectycube_user_id = $user_id;
                     $inset->login_id = $login_field;
-                    $inset->connectycube_password = (string)$request->get("password");
-                    $inset->save();
-
-                    $connrctcube = ($inset->connectycube_user_id);
-
-                    if($connrctcube == "0-email must be unique"){
+                    $inset->connectycube_password = $connectycube_password;
+                    
+                    if($user_id == "0-email must be unique"){
                         $response['success']="0";
                         $response['register']="Email Or Mobile Number Already Register in ConnectCube";
-
+                    
                     }
                     else
                     {
                         $inset->save();
                         $store=TokenData::where("token",$request->get("token"))->update(["user_id"=>$inset->id]);
                         $response['success']="1";
-                        $response['register']=array("user_id"=>$inset->id,"name"=>$inset->name,"phone"=>$inset->phoneno,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$inset->login_id,"connectycube_password"=>"$inset->connectycube_password","profile_pic"=>"");
+                        $response['register']=array("user_id"=>$inset->id,"name"=>$inset->name,"phone"=>$inset->phoneno,"email"=>$inset->email,"connectycube_user_id"=>$inset->connectycube_user_id,"login_id"=>$inset->login_id,"connectycube_password"=>$inset->connectycube_password,"profile_pic"=>"");
                     }
-
+                    
            }else{
                  $response['success']="0";
                  $response['register']="Email Already Register";
            }
-
+           
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -640,13 +641,13 @@ class ApiController extends Controller
             'password'=>'required',
             // 'token' => 'required'
         ];
-
+       
          $messages = array(
                   'email.required' => "Email is required",
                   'password.required' => "password is required",
                 //   'token.required' => "token is required"
             );
-
+       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -658,7 +659,7 @@ class ApiController extends Controller
                 $response['register'] = $message;
         } else {
            $getuser=Doctors::where("email",$request->get("email"))->where("password",$request->get("password"))->first();
-
+          
            if($getuser){//update token
                    $store=TokenData::where("token",$request->get("token"))->first();
                    if($store){
@@ -671,8 +672,8 @@ class ApiController extends Controller
                                 $image=asset("public/upload/profile/profile.png");
                                 }
                    $response['success']="1";
-                   $response['register']=array("doctor_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"login_id"=>$getuser->login_id,"connectycube_user_id"=>$getuser->connectycube_user_id,"profile_pic"=>$image,"connectycube_password"=>"$getuser->connectycube_password");
-
+                   $response['register']=array("doctor_id"=>$getuser->id,"name"=>$getuser->name,"phone"=>$getuser->phone,"email"=>$getuser->email,"login_id"=>$getuser->login_id,"connectycube_user_id"=>$getuser->connectycube_user_id,"profile_pic"=>$image,"connectycube_password"=>$getuser->connectycube_password);
+              
            }
            else{//in vaild user
                  $data=Doctors::where("email",$request->get("email"))->first();
@@ -683,7 +684,7 @@ class ApiController extends Controller
                       $response['success']="0";
                       $response['register']="Invaild Email";
                  }
-
+               
            }
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
@@ -703,7 +704,7 @@ class ApiController extends Controller
               $response['data']=$data;
           }else{
               $response['success']="0";
-              $response['register']="Speciality Not Found";
+              $response['register']="Speciality Not Found";              
           }
 
           return json_encode($response, JSON_NUMERIC_CHECK);
@@ -736,7 +737,7 @@ class ApiController extends Controller
                   "payment_type.required"=>"Payment Type is Required",
                   "stripeToken.required"=>"stripeToken is required"
             );
-
+       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -746,11 +747,11 @@ class ApiController extends Controller
                     $message .= $msg[0] . ", ";
                 }
                 $response['register'] = $message;
-        }
+        } 
         else
         {
             if(Patient::find($request->get("user_id"))){
-
+                
                 $getappointment=BookAppointment::where("date",$request->get("date"))->where('is_completed','1')->where("slot_id",$request->get("slot_id"))->first();
                 if($getappointment)
                 {
@@ -758,9 +759,9 @@ class ApiController extends Controller
                     $response['register']="Slot Already Booked";
                 }
                 else
-                {
+                { 
                     DB::beginTransaction();
-                    try
+                    try 
                     {
                            $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
                            $data=new BookAppointment();
@@ -774,11 +775,11 @@ class ApiController extends Controller
                            if($request->get("payment_type")=="COD"){
                               $data->payment_mode="COD";
                               $data->is_completed = "1";
-
+                             
                            }else{
                                $data->payment_mode="";
                                $data->is_completed = "0";
-
+                              
                            }
                            $data->consultation_fees = $request->get("consultation_fees");
                            $data->save();
@@ -800,13 +801,13 @@ class ApiController extends Controller
                                 $android=$this->send_notification_android($user->android_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 $ios=$this->send_notification_IOS($user->ios_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 try {
-                                      $user=Doctors::find($request->get("doctor_id"));
+                                      $user=Doctors::find($request->get("doctor_id")); 
                                       $user->msg=$msg;
-
+                                      
                                       $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
                                          $message->to($user->email,$user->name)->subject(__('message.System Name'));
                                       });
-
+                                      
                                 } catch (\Exception $e) {
                                 }
                             }
@@ -816,14 +817,14 @@ class ApiController extends Controller
                             $response['url'] = $url;
                             DB::commit();
                     }
-                    catch (\Exception $e)
+                    catch (\Exception $e) 
                     {
                         DB::rollback();
                         $response['success']="0";
                         $response['register']=$e;
                     }
-
-                }
+                                            
+                } 
             }
             else
             {
@@ -840,11 +841,11 @@ class ApiController extends Controller
         $rules = [
             'doctor_id'=>'required',
         ];
-
+       
          $messages = array(
                   'doctor_id.required' => "doctor_id is required"
             );
-
+       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -869,11 +870,11 @@ class ApiController extends Controller
                           }
                           $getdetail->avgratting=Review::where('doc_id',$request->get("doctor_id"))->avg('rating');
                           $getdetail->total_review=count(Review::where('doc_id',$request->get("doctor_id"))->get());
-                          $getdetail->image=asset('/upload/doctors').'/'.$getdetail->image;
+                          $getdetail->image=asset('public/upload/doctors').'/'.$getdetail->image;
                           $response['success']="1";
                           $response['register']="Doctor Get Successfully";
                           $response['data']=$getdetail;
-                  }
+                  }                  
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -887,14 +888,14 @@ class ApiController extends Controller
             'doc_id'=>'required',
             'description'=>'required'
         ];
-
+       
          $messages = array(
                   'user_id.required' => "user_id is required",
                   'rating.required' => "rating is required",
                   'doc_id.required' => "doc_id is required",
                   'description.required' => "description is required"
             );
-
+       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -905,7 +906,7 @@ class ApiController extends Controller
                 }
                 $response['register'] = $message;
         } else {
-
+                 
                    $store=new Review();
                    $store->user_id=$request->get("user_id");
                    $store->doc_id=$request->get("doc_id");
@@ -915,7 +916,7 @@ class ApiController extends Controller
                           $response['success']="1";
                           $response['register']="Review Add Successfully";
                           $response['data']=$store;
-
+                                   
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -928,12 +929,12 @@ class ApiController extends Controller
             'date'=>'required',
 
         ];
-
+       
          $messages = array(
                   'doctor_id.required' => "doctor_id is required",
                   'date.required' => "rating is required"
             );
-
+       
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
@@ -957,7 +958,7 @@ class ApiController extends Controller
                                             $getappointment=BookAppointment::where("date",$request->get("date"))->where("slot_id",$b->id)->whereNotNull('transaction_id')->where('is_completed','1')->where('status',"!=",6)->first();
                                             $getcodappointment=BookAppointment::where("date",$request->get("date"))->where("slot_id",$b->id)->where('payment_mode',"COD")->where('is_completed','1')->where('status',"!=",6)->first();
                                             $cancel_appointment=BookAppointment::where("date",$request->get("date"))->where("slot_id",$b->id)->where('status',6)->where('is_completed','1')->first();
-
+                                            
                                             $ka['id']=$b->id;
                                             $ka['name']=$b->slot;
 
@@ -973,7 +974,7 @@ class ApiController extends Controller
                                         }
                                     }
                                     $main[]=$slotlist;
-                                }
+                                } 
                           }
                           if(empty($slotlist)){
                               $response['success']="0";
@@ -983,8 +984,8 @@ class ApiController extends Controller
                               $response['register']="Get Slot Successfully";
                               $response['data']=$main;
                           }
-
-
+                          
+                                   
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -997,7 +998,7 @@ class ApiController extends Controller
             'lat'=>'required',
             'lon'=>'required'
         ];
-
+       
         $messages = array(
                   'department_id.required' => "department_id is required",
                   'lat.required' => "lat is required",
@@ -1017,13 +1018,13 @@ class ApiController extends Controller
                     $data =  $data=DB::table("doctors")
                             ->where("department_id",$request->get("department_id"))
                           ->select("doctors.id","doctors.name","doctors.address","doctors.email","doctors.phoneno","doctors.department_id","doctors.image"
-                              ,DB::raw("6371 * acos(cos(radians(" . $lat . "))
-                              * cos(radians(doctors.lat))
-                              * cos(radians(doctors.lon) - radians(" . $lon . "))
-                              + sin(radians(" .$lat. "))
+                              ,DB::raw("6371 * acos(cos(radians(" . $lat . ")) 
+                              * cos(radians(doctors.lat)) 
+                              * cos(radians(doctors.lon) - radians(" . $lon . ")) 
+                              + sin(radians(" .$lat. ")) 
                               * sin(radians(doctors.lat))) AS distance"))
                               ->orderby('distance')->WhereNotNull("doctors.lat")->paginate(10);
-
+                        
                           if(count($data)==0){
                               $response['success']="0";
                               $response['register']="Doctors Not Found";
@@ -1033,12 +1034,12 @@ class ApiController extends Controller
                                     if($dp){
                                          $d->department_name=$dp->name;
                                     }
-                                    $d->image=asset('/upload/doctors').'/'.$d->image;
+                                    $d->image=asset('public/upload/doctors').'/'.$d->image;
                                  }
                               $response['success']="1";
                               $response['register']="Doctors List Successfully";
                               $response['data']=$data;
-                          }
+                          }     
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -1049,7 +1050,7 @@ class ApiController extends Controller
         $rules = [
             'user_id'=>'required'
         ];
-
+       
         $messages = array(
                   'user_id.required' => "user_id is required"
         );
@@ -1063,7 +1064,7 @@ class ApiController extends Controller
                 $response['register'] = $message;
         } else {
                           $data=BookAppointment::where("user_id",$request->get("user_id"))->select("id","doctor_id","date","slot_name as slot",'phone')->where('is_completed','1')->orderby('id',"DESC")->paginate(15);
-
+                          
                           if(count($data)==0){
                               $response['success']="0";
                               $response['register']="Appointment Not Found";
@@ -1071,13 +1072,13 @@ class ApiController extends Controller
                             $new=array();
                                  foreach ($data as $d) {
                                      $a=array();
-
+                                     
                                      $doctors=Doctors::find($d->doctor_id);
                                      $department=Services::find($doctors->department_id);
                                      if($doctors){
                                          $d->name=$doctors->name;
                                          $d->address=$doctors->address;
-                                         $d->image=isset($doctors->image)?asset('/upload/doctors').'/'.$doctors->image:"";
+                                         $d->image=isset($doctors->image)?asset('public/upload/doctors').'/'.$doctors->image:"";
                                           $d->department_name=isset($department)?$department->name:"";
                                      }else{
                                           $d->name="";
@@ -1085,7 +1086,7 @@ class ApiController extends Controller
                                           $d->image="";
                                           $d->department_name="";
                                      }
-
+                                     
                                      unset($d->department_id);
                                      unset($d->doctor_id);
                                      unset($d->doctorls);
@@ -1102,16 +1103,16 @@ class ApiController extends Controller
                                         }else{
                                                $d->status=__("message.Absent");
                                         }
-
-
+                                       
+                                     
                                  }
-
-
+                                  
+                                   
                               $response['success']="1";
                               $response['register']="Appointment List Successfully";
                               $response['data']=$data;
-
-                          }
+                              
+                          }     
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -1122,7 +1123,7 @@ class ApiController extends Controller
         $rules = [
             'user_id'=>'required'
         ];
-
+       
         $messages = array(
                   'user_id.required' => "user_id is required"
         );
@@ -1142,13 +1143,13 @@ class ApiController extends Controller
                           }else{
                                 foreach ($data as $d) {
                                      $a=array();
-
+                                     
                                      $doctors=Doctors::find($d->doctor_id);
                                      $department=Services::find($doctors->department_id);
                                      if($doctors){
                                          $d->name=$doctors->name;
                                          $d->address=$doctors->address;
-                                         $d->image=isset($doctors->image)?asset('/upload/doctors').'/'.$doctors->image:"";
+                                         $d->image=isset($doctors->image)?asset('public/upload/doctors').'/'.$doctors->image:"";
                                           $d->department_name=isset($department)?$department->name:"";
                                      }else{
                                           $d->name="";
@@ -1159,7 +1160,7 @@ class ApiController extends Controller
                                      unset($d->department_id);
                                      unset($d->doctor_id);
                                      unset($d->doctorls);
-
+                                     
                                       if($d->status=='1'){
                                               $d->status=__("message.Received");
                                         }else if($d->status=='2'){
@@ -1178,7 +1179,7 @@ class ApiController extends Controller
                               $response['success']="1";
                               $response['register']="Appointment List Successfully";
                               $response['data']=$data;
-                          }
+                          }     
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -1189,8 +1190,8 @@ class ApiController extends Controller
         $rules = [
             'doctor_id'=>'required'
         ];
-
-
+        
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required"
         );
@@ -1214,15 +1215,15 @@ class ApiController extends Controller
                                     $ls['name']=isset($d->patientls->name)?$d->patientls->name:"";
                                     $ls['rating']=isset($d->rating)?$d->rating:"";
                                     $ls['description']=isset($d->description)?$d->description:"";
-                                    $ls['image']=isset($d->patientls->profile_pic)?asset('/upload/profile').'/'.$d->patientls->profile_pic:"";
+                                    $ls['image']=isset($d->patientls->profile_pic)?asset('public/upload/profile').'/'.$d->patientls->profile_pic:"";
                                     $ls['phone']=isset($d->patientls->phone)?$d->phone:"";
                                     $main_array[]=$ls;
                                 }
-
+                                 
                               $response['success']="1";
                               $response['register']="Review List Successfully";
                               $response['data']=$main_array;
-                          }
+                          }     
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -1233,7 +1234,7 @@ class ApiController extends Controller
         $rules = [
             'doctor_id'=>'required'
         ];
-
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required"
         );
@@ -1255,11 +1256,11 @@ class ApiController extends Controller
                                      $user=Patient::find($d->user_id);
                                      if($user){
                                          $d->name=$user->name;
-                                         $d->image=isset($user->profile_pic)?asset('/upload/profile').'/'.$user->profile_pic:"";
+                                         $d->image=isset($user->profile_pic)?asset('public/upload/profile').'/'.$user->profile_pic:"";
                                      }else{
                                          $d->name="";
                                          $d->image="";
-
+                                         
                                      }
                                       if($d->status=='1'){
                                               $d->status=__("message.Received");
@@ -1279,7 +1280,7 @@ class ApiController extends Controller
                               $response['success']="1";
                               $response['register']="Appointment List Successfully";
                               $response['data']=$data;
-                          }
+                          }     
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -1290,7 +1291,7 @@ class ApiController extends Controller
         $rules = [
             'doctor_id'=>'required'
         ];
-
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required"
         );
@@ -1303,22 +1304,22 @@ class ApiController extends Controller
                 }
                 $response['register'] = $message;
         } else {
-
+                 
                           $data=BookAppointment::where("date",">=",date('Y-m-d'))->where("doctor_id",$request->get("doctor_id"))->where("is_completed",1)->orderby('id','DESC')->select("date","id","slot_name as slot","user_id","phone","status")->paginate(10);
                           if(count($data)==0){
                               $response['success']="0";
                               $response['register']="Appointment Not Found";
                           }else{
-
+                                
                                  foreach ($data as $d) {
                                      $user=Patient::find($d->user_id);
                                     if($user){
                                          $d->name=$user->name;
-                                         $d->image=isset($user->profile_pic)?asset('/upload/profile').'/'.$user->profile_pic:"";
+                                         $d->image=isset($user->profile_pic)?asset('public/upload/profile').'/'.$user->profile_pic:"";
                                      }else{
                                          $d->name="";
                                          $d->image="";
-
+                                         
                                      }
                                       if($d->status=='1'){
                                               $d->status=__("message.Received");
@@ -1338,12 +1339,12 @@ class ApiController extends Controller
                               $response['success']="1";
                               $response['register']="Appointment List Successfully";
                               $response['data']=$data;
-                          }
+                          }     
         }
         return json_encode($response);
 
    }
-
+  
     public function doctordetail(Request $request){
 
         $response = array("success" => "0", "register" => "Validation error");
@@ -1376,14 +1377,14 @@ class ApiController extends Controller
                 unset($data->department_id);
                 if (isset($data->image) && !empty($data->image))
                 {
-                  $data->image = asset("public/upload/doctors") . '/' . $data->image;
+                  $data->image = $data->image;
                 }else{
-                  $data->image = asset("public/upload/doctors") . '/user.png';
+                  $data->image = 'user.png';
                 }
                 $data->avgratting = round(Review::where("doc_id", $request->get("doctor_id"))->avg('rating'));
 
                 $mysubscriptionlist = Subscriber::where('doctor_id', $request->get("doctor_id"))->where("status",'2')->orderby('id', 'DESC')->first();
-
+                
                 if (isset($mysubscriptionlist)) {
                     $mysubscriptionlist->subscription_data = Subscription::find($mysubscriptionlist->subscription_id);
 
@@ -1403,7 +1404,7 @@ class ApiController extends Controller
                         }
                         //die
                         if (strtotime($current_date) < strtotime($date)) {
-
+                           
                             if ($mysubscriptionlist->status == 2) {
                                 $data->is_approve = 1;
                             } else {
@@ -1433,7 +1434,7 @@ class ApiController extends Controller
         return json_encode($response);
 
     }
-
+    
     public function place_subscription(Request $request){
         $response = array("success" => "0", "msg" => "Validation error");
         $rules = [
@@ -1557,7 +1558,7 @@ class ApiController extends Controller
             }else{
                 $data->status = "1";
             }
-
+            
             $data->save();
             if($request->get("payment_type")==2){
                 $url = "";
@@ -1576,14 +1577,14 @@ class ApiController extends Controller
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
     }
-
+    
     public function appointmentdetail(Request $request){
        $response = array("success" => "0", "register" => "Validation error");
         $rules = [
             'id'=>'required',
             'type'=>'required'
         ];
-
+       
         $messages = array(
                   'id.required' => "id is required",
                   'type.required' => "type is required"
@@ -1614,9 +1615,9 @@ class ApiController extends Controller
                                 $ls['email']=isset($data->doctorls)?$data->doctorls->email:"";;
                                 $ls['description']=$data->user_description;
                                 $ls['connectycube_user_id']=$data->doctorls->connectycube_user_id;
-                                $ls['id']=$data->id;
+                                $ls['id']=$data->id;  
                                 if($data->prescription_file!=""){
-                                    $ls['prescription'] = asset('/upload/prescription').'/'.$data->prescription_file;
+                                    $ls['prescription'] = asset('public/upload/prescription').'/'.$data->prescription_file;
                                 }else{
                                     $ls['prescription'] = "";
                                 }
@@ -1625,11 +1626,11 @@ class ApiController extends Controller
                                 $date22 = $this->getsitedatetime();
                                 $date1=date_create($date12);
                                 $date2=date_create($date22);
-
+                              
                                 if($data->date!=$this->getsitedate()){
                                    $ls['remain_time'] = "00:00:00";
                                 }else{
-
+                                    
                                     if(strtotime($date12)<strtotime($date22)){
                                         $ls['remain_time'] = "00:00:00";
                                     }else{
@@ -1639,7 +1640,7 @@ class ApiController extends Controller
                                 }
                                 $sdchule_id = SlotTiming::find($data->slot_id)?SlotTiming::find($data->slot_id)->schedule_id:'0';
                                 $ls['is_appointment_time'] = 0;
-
+                               
                                 if($sdchule_id!=0){
                                     //echo $this->getsitedate();exit;
                                     if($data->date==$this->getsitedate()){
@@ -1652,17 +1653,17 @@ class ApiController extends Controller
                                           $ls['is_appointment_time']  = 1;
                                         }
                                     }
-
+                                    
                                 }
-
-
-
+                                
+                                
+                                
                             }else{ //doctor
                               $ls['user_image']=isset($data->patientls->profile_pic)?asset("public/upload/profile").'/'.$data->patientls->profile_pic:"";
                               $ls['user_name']=isset($data->patientls)?$data->patientls->name:"";
                               $ls['doctor_name']=isset($data->doctorls)?$data->doctorls->name:"";
                               $ls['doctor_image']=isset($data->doctorls->image)?asset("public/upload/doctors").'/'.$data->doctorls->image:"";
-
+                              
                                  $ls['status'] = $data->status;
                                 $ls['date']=$data->date;
                                  $ls['doctor_id'] = $data->doctor_id;
@@ -1672,9 +1673,9 @@ class ApiController extends Controller
                                 $ls['email']=isset($data->patientls)?$data->patientls->email:"";
                                 $ls['connectycube_user_id']=$data->patientls->connectycube_user_id;
                                 $ls['description']=$data->user_description;
-                                $ls['id']=$data->id;
+                                $ls['id']=$data->id;   
                                  if($data->prescription_file!=""){
-                                    $ls['prescription'] = asset('/upload/prescription').'/'.$data->prescription_file;
+                                    $ls['prescription'] = asset('public/upload/prescription').'/'.$data->prescription_file;
                                 }else{
                                     $ls['prescription'] = "";
                                 }
@@ -1687,7 +1688,7 @@ class ApiController extends Controller
                                  if($data->date!=$this->getsitedate()){
                                    $ls['remain_time'] = "00:00:00";
                                 }else{
-
+                                    
                                     if(strtotime($date12)<strtotime($date22)){
                                         $ls['remain_time'] = "00:00:00";
                                     }else{
@@ -1697,7 +1698,7 @@ class ApiController extends Controller
                                 }
                                 $sdchule_id = SlotTiming::find($data->slot)?SlotTiming::find($data->slot)->schedule_id:'0';
                                 $ls['is_appointment_time'] = 0;
-
+                               
                                 if($sdchule_id!=0){
                                     //echo $this->getsitedate();exit;
                                     if($data->date==$this->getsitedate()){
@@ -1710,7 +1711,7 @@ class ApiController extends Controller
                                           $ls['is_appointment_time']  = 1;
                                         }
                                     }
-
+                                    
                                 }
                             }
                             $response['success']="1";
@@ -1720,7 +1721,7 @@ class ApiController extends Controller
                              $response['success']="0";
                              $response['register']="Appointment Not Found";
                     }
-
+                   
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -1746,7 +1747,7 @@ class ApiController extends Controller
                     "consultation_fees"=>"required"
                     //"time_json"=>"required"
         ];
-
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required",
                   'name.required' => "name is required",
@@ -1775,16 +1776,16 @@ class ApiController extends Controller
                 $response['register'] = $message;
         } else {
 
-
+                    
                         $store=Doctors::find($request->get("doctor_id"));
                         if($store){
                               DB::beginTransaction();
                               try {
                                     $img_url=$store->image;
-                                    $rel_url=$store->image;
-                                         if ($request->file('image'))
+                                    $rel_url=$store->image;         
+                                         if ($request->file('image')) 
                                     {
-
+                                       
                                               $file = $request->file('image');
                                              $filename = $file->getClientOriginalName();
                                              $extension = $file->getClientOriginalExtension() ?: 'png';
@@ -1792,15 +1793,15 @@ class ApiController extends Controller
                                              $picture = time() . '.' . $extension;
                                              $destinationPath = public_path() . $folderName;
                                              $request->file('image')->move($destinationPath, $picture);
-                                             $img_url =$picture;
+                                             $img_url =$picture;                
                                               $image_path = public_path() ."/upload/doctors/".$rel_url;
                                                 if(file_exists($image_path)&&$rel_url!="") {
                                                     try {
                                                          unlink($image_path);
                                                     }
                                                     catch(Exception $e) {
-
-                                                    }
+                                                      
+                                                    }                        
                                               }
                                     }
                                     $store->name=$request->get("name");
@@ -1830,7 +1831,7 @@ class ApiController extends Controller
                                             $findslot=SlotTiming::where("schedule_id",$k->id)->delete();
                                             $k->delete();
                                         }
-                                     }
+                                     }                  
                                     foreach ($arr as $k) {
                                        foreach ($k as $l) {
                                             $getslot=$this->getslotvalue($l['start_time'],$l['end_time'],$l['duration']);
@@ -1868,28 +1869,28 @@ class ApiController extends Controller
 
    }
 
-    public function getslotvalue($start_time,$end_time,$duration){
+    public function getslotvalue($start_time,$end_time,$duration){       
          $datetime1 = strtotime($start_time);
          $datetime2 = strtotime($end_time);
          $interval  = abs($datetime2 - $datetime1);
-         $minutes   = round($interval / 60);
+         $minutes   = round($interval / 60);         
          $noofslot=$minutes /$duration;
          $slot=array();
          if($noofslot>0){
-            for ($i=0; $i <$noofslot; $i++) {
+            for ($i=0; $i <$noofslot; $i++) { 
                 $a=$duration*$i;
                 $slot[]=date("h:i A",strtotime("+".$a." minutes", strtotime($start_time)));
             }
          }
          return $slot;
      }
-
+     
     public function getdoctorschedule(Request $request){
           $response = array("success" => "0", "register" => "Validation error");
         $rules = [
             'doctor_id'=>'required'
         ];
-
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required"
         );
@@ -1903,7 +1904,7 @@ class ApiController extends Controller
                 $response['register'] = $message;
         } else {
                           $data=Doctors::find($request->get("doctor_id"));
-
+                        
                           if(empty($data)){
                               $response['success']="0";
                               $response['register']="Doctor Not Found";
@@ -1912,7 +1913,7 @@ class ApiController extends Controller
                               $response['success']="1";
                               $response['register']="Doctor Get Successfully";
                               $response['data']=$data;
-                          }
+                          }     
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
@@ -1927,7 +1928,7 @@ class ApiController extends Controller
             'phone'=>'required',
             'password'=>'required'
         ];
-
+       
         $messages = array(
                   'id.required' => "id is required",
                   'name.required' => "name is required",
@@ -1945,22 +1946,22 @@ class ApiController extends Controller
                 $response['register'] = $message;
         } else {
                           $data1=Patient::find($request->get("id"));
-
+                        
                           if(empty($data1)){
                               $response['success']="0";
                               $response['register']="Patient Not Found";
                           }else{
-
+                              
                               $checkemail=Patient::where("email",$request->get("email"))->where("id",'!=',$request->get("id"))->first();
                               if($checkemail){
                                   $response['success']="0";
                                   $response['register']="Email Already Use By Other User";
                               }else{
                                     $img_url=$data1->profile_pic;
-                                    $rel_url=$data1->profile_pic;
-                                    if ($request->file('image'))
+                                    $rel_url=$data1->profile_pic;         
+                                    if ($request->file('image')) 
                                     {
-
+                                        
                                              $file = $request->file('image');
                                              $filename = $file->getClientOriginalName();
                                              $extension = $file->getClientOriginalExtension() ?: 'png';
@@ -1968,15 +1969,15 @@ class ApiController extends Controller
                                              $picture = time() . '.' . $extension;
                                              $destinationPath = public_path() . $folderName;
                                              $request->file('image')->move($destinationPath, $picture);
-                                             $img_url =$picture;
+                                             $img_url =$picture;                
                                               $image_path = public_path() ."/upload/profile/".$rel_url;
                                                 if(file_exists($image_path)&&$rel_url!="") {
                                                     try {
                                                          unlink($image_path);
                                                     }
                                                     catch(Exception $e) {
-
-                                                    }
+                                                      
+                                                    }                        
                                               }
                                     }
                                   $data1->name=$request->get("name");
@@ -1989,13 +1990,13 @@ class ApiController extends Controller
                                    $response['register']="User Get Successfully";
                                    $response['data']=$data1;
                               }
-
-                          }
+                              
+                          }     
         }
        return json_encode($response, JSON_NUMERIC_CHECK);
 
      }
-
+     
     public function saveReportspam(Request $request){
     $response = array("success" => "0", "register" => "Validation error");
         $rules = [
@@ -2003,7 +2004,7 @@ class ApiController extends Controller
             'title'=>'required',
             'description'=>'required'
         ];
-
+       
         $messages = array(
                   'user_id.required' => "user_id is required",
                   'title.required' => "title is required",
@@ -2018,7 +2019,7 @@ class ApiController extends Controller
                 }
                 $response['register'] = $message;
         } else {
-
+                          
                           $store=new Reportspam();
                           $store->user_id=$request->get("user_id");
                           $store->title=$request->get("title");
@@ -2027,21 +2028,21 @@ class ApiController extends Controller
                                   $response['success']="1";
                                    $response['register']="Report Send Successfully";
                                    $response['data']=$store;
-
-
-
+                             
+                              
+                         
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
      }
-
+     
     public function user_reject_appointment(Request $request){
         $response = array("success" => "0", "register" => "Validation error");
         $rules = [
             'user_id'=>'required',
             'id'=>'required'
         ];
-
+       
         $messages = array(
                   'user_id.required' => "user_id is required",
                   'id.required' => "id is required"
@@ -2055,7 +2056,7 @@ class ApiController extends Controller
                 }
                 $response['register'] = $message;
         } else {
-
+                          
                     $data=BookAppointment::where("id",$request->get("id"))->where("user_id",$request->get("user_id"))->first();
                     if($data){
                         $data->status=5;
@@ -2066,13 +2067,13 @@ class ApiController extends Controller
                          $response['success']="0";
                     $response['register']="Appointment Not Found";
                     }
-
+                   
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
-
+         
      }
-
+     
     public function appointmentstatuschange(Request $request){
         $response = array("success" => "0", "msg" => "Validation error");
         $rules = [
@@ -2082,7 +2083,7 @@ class ApiController extends Controller
         if($request->input('status')==4){
             $rules['prescription'] = 'required';
         }
-
+       
         $messages = array(
                   'app_id.required' => "app_id is required",
                   'status.required' => "status is required",
@@ -2097,11 +2098,11 @@ class ApiController extends Controller
                 }
                 $response['register'] = $message;
         } else {
-
+                          
                  $getapp=BookAppointment::with('doctorls','patientls')->find($request->get("app_id"));
                  if($getapp){
                             $getapp->status=$request->get("status");
-                            if ($request->hasFile('prescription'))
+                            if ($request->hasFile('prescription')) 
                               {
                                  $file = $request->file('prescription');
                                  $filename = $file->getClientOriginalName();
@@ -2129,49 +2130,49 @@ class ApiController extends Controller
                                 $msg="";
                             }
                             $user=User::find(1);
-
+                            
                             $android=$this->send_notification_android($user->android_key,$msg,$getapp->user_id,"user_id",$getapp->id);
                             $ios=$this->send_notification_IOS($user->ios_key,$msg,$getapp->user_id,"user_id",$getapp->id);
                             $response['success']="1";
                             $response['msg']=$msg;
                               try {
                                    if($getapp->prescription_file!=""){
-                                        $user=Patient::find($getapp->user_id);
+                                        $user=Patient::find($getapp->user_id); 
                                         $user->msg=$msg;
                                         $user->prescription = $getapp->prescription_file;
                                          $user->email="redixbit.jalpa@gmail.com";
                                           $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
                                              $message->to($user->email,$user->name)->subject(__('message.System Name'));
-                                             $message->attach(asset('/upload/prescription').'/'.$user->prescription);
-
+                                             $message->attach(asset('public/upload/prescription').'/'.$user->prescription);
+                                             
                                           });
                                    }else{
-                                        $user=Patient::find($getapp->user_id);
+                                        $user=Patient::find($getapp->user_id); 
                                         $user->msg=$msg;
                                          //$user->email="redixbit.jalpa@gmail.com";
                                           $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
                                              $message->to($user->email,$user->name)->subject(__('message.System Name'));
-
+                                             
                                           });
                                    }
-
-
+                                      
+                                  
                               } catch (\Exception $e) {
                               }
                  }else{
                         $response['success']="0";
                         $response['msg']="Appointment Not Found";
-                 }
+                 }       
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
      }
-
+     
     public function send_notification_android($key,$msg,$id,$field,$order_id){
         $getuser=TokenData::where("type",1)->where($field,$id)->get();
-
+        
         $i=0;
-        if(count($getuser)!=0){
+        if(count($getuser)!=0){   
 
                $reg_id = array();
                foreach($getuser as $gt){
@@ -2179,7 +2180,7 @@ class ApiController extends Controller
                }
                $regIdChunk=array_chunk($reg_id,1000);
                foreach ($regIdChunk as $k) {
-                       $registrationIds =  $k;
+                       $registrationIds =  $k;    
                         $message = array(
                             'message' => $msg,
                             'title' =>  __('message.notification')
@@ -2197,14 +2198,14 @@ class ApiController extends Controller
                           'data'              => $message1,
                           'notification'      =>$message1
                        );
-
+                       
                       // echo "<pre>";print_r($fields);exit;
                        $url = 'https://fcm.googleapis.com/fcm/send';
                        $headers = array(
                          'Authorization: key='.$key,// . $api_key,
                          'Content-Type: application/json'
                        );
-                      $json =  json_encode($fields);
+                      $json =  json_encode($fields);   
                       $ch = curl_init();
                       curl_setopt($ch, CURLOPT_URL, $url);
                       curl_setopt($ch, CURLOPT_POST, true);
@@ -2212,11 +2213,11 @@ class ApiController extends Controller
                       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                       curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
-                      $result = curl_exec($ch);
+                      $result = curl_exec($ch);   
                       //echo "<pre>";print_r($result);exit;
                       if ($result === FALSE){
                          die('Curl failed: ' . curl_error($ch));
-                      }
+                      }     
                      curl_close($ch);
                      $response[]=json_decode($result,true);
                }
@@ -2235,18 +2236,18 @@ class ApiController extends Controller
         }
         return 0;
      }
-
+     
     public function send_notification_IOS($key,$msg,$id,$field,$order_id){
       $getuser=TokenData::where("type",2)->where($field,$id)->get();
-         if(count($getuser)!=0){
+         if(count($getuser)!=0){               
                $reg_id = array();
                foreach($getuser as $gt){
                    $reg_id[]=$gt->token;
                }
-
+                
               $regIdChunk=array_chunk($reg_id,1000);
                foreach ($regIdChunk as $k) {
-                       $registrationIds =  $k;
+                       $registrationIds =  $k;    
                        $message = array(
                             'message' => $msg,
                             'title' =>  __('message.notification')
@@ -2268,7 +2269,7 @@ class ApiController extends Controller
                          'Authorization: key='.$key,// . $api_key,
                          'Content-Type: application/json'
                        );
-                      $json =  json_encode($fields);
+                      $json =  json_encode($fields);   
                       $ch = curl_init();
                       curl_setopt($ch, CURLOPT_URL, $url);
                       curl_setopt($ch, CURLOPT_POST, true);
@@ -2276,10 +2277,10 @@ class ApiController extends Controller
                       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                       curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
-                      $result = curl_exec($ch);
+                      $result = curl_exec($ch);   
                       if ($result === FALSE){
                          die('Curl failed: ' . curl_error($ch));
-                      }
+                      }     
                      curl_close($ch);
                      $response[]=json_decode($result,true);
                }
@@ -2298,14 +2299,14 @@ class ApiController extends Controller
         }
         return 0;
      }
-
+     
     public function forgotpassword(Request $request){
         $response = array("success" => "0", "msg" => "Validation error");
         $rules = [
             'type'=>'required',
             'email'=>'required'
         ];
-
+       
         $messages = array(
                   'type.required' => "type is required",
                   'email.required' => "email is required"
@@ -2335,40 +2336,40 @@ class ApiController extends Controller
                           $add->code=$code;
                           $add->type=$request->get("type");
                           $add->save();
-
+                          
                           Mail::send('email.reset_password', ['user' => $store], function($message) use ($store){
                                     $message->to($store['email'],$store['name'])->subject(__("message.System Name"));
                                 });
-
+                        
                            exit();
                           try {
                                 $result =  Mail::send('email.reset_password', ['user' => $store], function($message) use ($store){
                                     $message->to($store['email'],$store['name'])->subject(__("message.System Name"));
                                 });
-
+                                  
                           } catch (\Exception $e) {
                           }
 
                            $response['success']="1";
-                          $response['msg']="Mail Send Successfully";
-
+                          $response['msg']="Mail Send Successfully";    
+                         
                       }else{
                             $response['success']="0";
-                            $response['msg']="Email Not Found";
-
-                      }
-
+                            $response['msg']="Email Not Found";   
+                          
+                      }       
+                 
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
     }
-
+    
     public function getholiday(Request $request){
         $response = array("success" => "0", "msg" => "Validation error");
         $rules = [
             'doctor_id'=>'required'
         ];
-
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required"
         );
@@ -2394,7 +2395,7 @@ class ApiController extends Controller
         return json_encode($response, JSON_NUMERIC_CHECK);
 
     }
-
+    
     public function saveholiday(Request $request){
         $response = array("success" => "0", "msg" => "Validation error");
         $rules = [
@@ -2403,9 +2404,9 @@ class ApiController extends Controller
             'start_date'=>'required',
             'end_date'=>'required',
             'description'=>'required'
-
+            
         ];
-
+       
         $messages = array(
              'doctor_id.required' => "doctor_id is required",
              'id.required' => "id is required",
@@ -2452,13 +2453,13 @@ class ApiController extends Controller
         return json_encode($response, JSON_NUMERIC_CHECK);
 
     }
-
+    
     public function deleteholiday(Request $request){
         $response = array("success" => "0", "msg" => "Validation error");
         $rules = [
             'id'=>'required'
         ];
-
+       
         $messages = array(
                   'id.required' => "id is required"
         );
@@ -2485,14 +2486,14 @@ class ApiController extends Controller
         return json_encode($response, JSON_NUMERIC_CHECK);
 
     }
-
+    
     public function checkholiday(Request $request){
         $response = array("success" => "0", "msg" => "Validation error");
         $rules = [
             'doctor_id'=>'required',
             'date'=>'required'
         ];
-
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required",
                   'date.required' => "date is required"
@@ -2520,13 +2521,13 @@ class ApiController extends Controller
         return json_encode($response, JSON_NUMERIC_CHECK);
 
     }
-
+    
     public function mediaupload(Request $request){
       // dd($request->all());
        $response = array("status" => 0, "msg" => "Validation error");
             $rules = [
                       'file' => 'required'
-                    ];
+                    ];                    
             $messages = array(
                       'file.required' => "file is required"
             );
@@ -2538,13 +2539,13 @@ class ApiController extends Controller
                          $message .= $msg[0] . ", ";
                   }
                   $response['msg'] = $message;
-            } else {
-
+            } else {  
+               
                           $img_url="";
-                          $type="";
+                          $type="";       
                           // echo "<pre>";print_r($_FILES);exit;
                             if($request->file("file")){
-
+                                
                                  $file = $request->file('file');
                                  $filename = $file->getClientOriginalName();
                                  $extension = $file->getClientOriginalExtension() ?: 'mp4';
@@ -2553,7 +2554,7 @@ class ApiController extends Controller
                                  $destinationPath = public_path() . $folderName;
                                  $request->file('file')->move($destinationPath, $picture);
                                  $img_url =$picture;
-
+                                
                                  $response = array("status" =>1, "msg" => "Media Upload Successfully","data"=>$img_url);
                                   return Response::json($response);
                              }else{
@@ -2563,30 +2564,30 @@ class ApiController extends Controller
            }
            return Response::json($response);
    }
-
+   
     public function banner_list(Request $request){
       $data =Banner::select('id','image')->orderby('id','DESC')->get();
           if(count($data)>0){
               $response['status']= 1;
               $response['msg']="Banner List";
               $response['data']=$data;
-
+              
           }else{
                $data3 =array();
                $response['status']= 0;
                $response['message']="Data Not Found";
-               $response['data'] = $data3;
+               $response['data'] = $data3;               
           }
         return Response::json($response);
    }
-
+    
     public function income_report(Request $request){
         $response = array("success" => "0", "register" => "Validation error");
         $rules = [
             'doctor_id'=>'required',
             'duration'=>'required'
         ];
-
+       
         $messages = array(
                   'doctor_id.required' => "doctor_id is required",
                   'duration.required' => "duration is required"
@@ -2599,46 +2600,46 @@ class ApiController extends Controller
                     $message .= $msg[0] . ", ";
                 }
                 $response['register'] = $message;
-        }
-        else
-        {
+        } 
+        else 
+        {   
             $date = Carbon::now();
-
+            
             if($request->get("duration") == "today"){
-
+                
                 $data=BookAppointment::orderby('id',"DESC")->where("doctor_id",$request->get("doctor_id"))->where('is_completed','1')->whereDate('created_at','=',$date)->select("date","id","consultation_fees","created_at")->paginate(10);
-
+                
             }else if($request->get("duration") == "last 7 days"){
-
+                
                 $date = Carbon::now()->subDays(7);
                 $data=BookAppointment::orderby('id',"DESC")->where("doctor_id",$request->get("doctor_id"))->where('is_completed','1')->whereDate('created_at','>=',$date)->select("date","id","consultation_fees","created_at")->paginate(10);
-
+              
             }else if($request->get("duration") == "last 30 days"){
-
+                
                 $date = Carbon::now()->subDays(30);
                 $data=BookAppointment::orderby('id',"DESC")->where("doctor_id",$request->get("doctor_id"))->where('is_completed','1')->whereDate('created_at','>=',$date)->select("date","id","consultation_fees","created_at")->paginate(10);
-
+              
             }else{
-
+                
                 $date = explode(',',$request->get("duration"));
                 $start = $date[0];
                 $end = $date[1];
                 $data=BookAppointment::orderby('id',"DESC")->where("doctor_id",$request->get("doctor_id"))->where('is_completed','1')->whereBetween(DB::raw('DATE(created_at)'), [$start, $end])->select("date","id","consultation_fees","created_at")->paginate(10);
-
+               
             }
-
+            
             if(count($data) == 0){
                 $response['success']="0";
                 $response['register']="Appointment Not Found";
             }else{
                 $report = array();
-
+                
                  foreach ($data as  $d) {
                     $created_at = date('Y-m-d', strtotime($d->created_at));
-
+                     
                     $visitors = BookAppointment::select(DB::raw("(DATE_FORMAT(created_at, '%Y-%m-%d'))"))->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d')"))
                             ->where("doctor_id",$request->get("doctor_id"))->where('is_completed','1')->whereDate('created_at',$created_at)->sum('consultation_fees');
-
+                            
                     $report[] = array(
                         "date" => $created_at,
                         "amount" => $visitors
@@ -2648,52 +2649,102 @@ class ApiController extends Controller
                 //  print_r($datess);
                 //  exit();
                 //  $date_data = array_unique($datess);
-
+                 
                     $myArray = array_map("unserialize", array_unique(array_map("serialize", $report)));
                     $total = 0;
                     foreach($myArray as $my){
                         $totals = $total + $my['amount'];
                         $total = $totals;
                     }
-
+                    
                     $temp_array = array("income_record"=>$myArray, "total_income"=>$total);
               $response['success']="1";
               $response['register']="Appointment List Successfully";
               $response['data']=$temp_array;
-          }
+          }     
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
     }
-
+    
+    public function data_list(Request $request){
+        $banner =Banner::select('id','image')->orderby('id','DESC')->get();
+      
+        $speciality =Services::select('id','name','icon')->get();
+        
+        if(!empty($request->get("user_id"))){
+            $user_id = $request->get("user_id");
+        }else{
+            $user_id = 0;
+        }
+        
+        $data=BookAppointment::with('doctorls')->where("date",">=",date('Y-m-d'))->select("id","doctor_id","date","slot_name as slot",'phone')->where('is_completed','1')->where("user_id",$user_id)->get();
+        
+        foreach($data as $d){
+            $dr=Services::find($d->doctorls->department_id);
+                 if($dr){
+                     $d->department_name=$dr->name;
+                 }
+                unset($d->doctorls->id); 
+                unset($d->doctorls->department_id);
+                unset($d->doctorls->aboutus);
+                unset($d->doctorls->services);
+                unset($d->doctorls->healthcare);
+                unset($d->doctorls->facebook_url);
+                unset($d->doctorls->twitter_url);
+                unset($d->doctorls->created_at);
+                unset($d->doctorls->updated_at);
+                unset($d->doctorls->is_approve);
+                unset($d->doctorls->login_id);
+                unset($d->doctorls->connectycube_user_id);
+                unset($d->doctorls->connectycube_password);
+                unset($d->doctorls->unique_id);
+                unset($d->doctorls->gender);
+                unset($d->doctorls->title);
+                unset($d->doctorls->institution_name);
+                unset($d->doctorls->birth_name);
+                unset($d->doctorls->spouse_name);
+                unset($d->doctorls->state);
+                unset($d->doctorls->city);
+        }   
+        $temp_array = array("banner"=>$banner,"speciality"=>$speciality,"appointment"=>$data);
+          
+        $response['status']= 1;
+        $response['msg']="List";
+        $response['data']=$temp_array;
+              
+         
+        return Response::json($response);
+    }
+   
     public function about(){
         $data=About::find(1);
         if($data){
               $response['status']= 1;
               $response['msg']="About List";
               $response['data']=$data;
-
+              
           }else{
                $data3 =array();
                $response['status']= 0;
                $response['message']="Data Not Found";
-               $response['data'] = $data;
+               $response['data'] = $data;               
           }
         return Response::json($response);
    }
-
+   
     public function privecy(){
        $data=Privecy::find(1);
        if($data){
               $response['status']= 1;
               $response['msg']="Privecy List";
               $response['data']=$data;
-
-          }else{
+              
+          }else{ 
                $data3 =array();
                $response['status']= 0;
                $response['message']="Data Not Found";
-               $response['data'] = $data;
+               $response['data'] = $data;               
           }        return Response::json($response);
    }
 }

@@ -217,6 +217,33 @@
                         <span>{{__("message.Data-Deletion")}}</span>
                         </a>
                      </li>
+
+                     <li class="menu-title">Reports</li>
+                     <li>
+                        <a href="{{route('doctor_report')}}" class="waves-effect">
+                        <i class="uil-invoice"></i>
+                        <span>Doctors </span>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="{{route('user_report')}}" class="waves-effect">
+                        <i class="uil-invoice"></i>
+                        <span>User </span>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="{{route('do_sub_report')}}" class="waves-effect">
+                        <i class="uil-invoice"></i>
+                        <span>Doctor Subscription </span>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="{{route('app_book_report')}}" class="waves-effect">
+                        <i class="uil-invoice"></i>
+                        <span>Appointment booked </span>
+                        </a>
+                     </li>
+
                      <li class="menu-title">{{__("message.Payment")}}</li>
                      <li>
                         <a href="{{url('admin/pending_payment')}}" class="waves-effect">

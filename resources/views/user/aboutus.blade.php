@@ -6,13 +6,13 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="{{__('message.System Name')}}"/>
 <meta property="og:title" content="{{__('message.System Name')}}"/>
-<meta property="og:image" content="{{asset('/image_web/').'/'.$setting->favicon}}"/>
+<meta property="og:image" content="{{asset('public/image_web/').'/'.$setting->favicon}}"/>
 <meta property="og:image:width" content="250px"/>
 <meta property="og:image:height" content="250px"/>
 <meta property="og:site_name" content="{{__('message.System Name')}}"/>
 <meta property="og:description" content="{{__('message.meta_description')}}"/>
 <meta property="og:keyword" content="{{__('message.Meta Keyword')}}"/>
-<link rel="shortcut icon" href="{{asset('/image_web/').'/'.$setting->favicon}}">
+<link rel="shortcut icon" href="{{asset('public/image_web/').'/'.$setting->favicon}}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 @stop
 @section('content')
@@ -50,9 +50,9 @@
                                 <!--    <li>Associates Insurance</li>-->
                                 <!--    <li>Pina & Insurance</li>-->
                                 <!--</ul>-->
-
+                                
                                  {!! $data->about !!}
-
+                              
                             </div>
                         </div>
                     </div>
@@ -60,14 +60,14 @@
                         <div class="image_block_3">
                             <div class="image-box">
                                 <div class="pattern">
-                                    <div class="pattern-1" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-49.png')}}');"></div>
-                                    <div class="pattern-2" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-50.png')}}');"></div>
+                                    <div class="pattern-1" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-49.png')}}');"></div>
+                                    <div class="pattern-2" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-50.png')}}');"></div>
                                     <div class="pattern-3"></div>
                                 </div>
-                                <figure class="image image-1 paroller"><img src="{{asset('/front_pro/assets/images/resource/about-4.jpg')}}" alt=""></figure>
-                                <figure class="image image-2 paroller-2"><img src="{{asset('/front_pro/assets/images/resource/about-3.jpg')}}" alt=""></figure>
+                                <figure class="image image-1 paroller"><img src="{{asset('public/front_pro/assets/images/resource/about-4.jpg')}}" alt=""></figure>
+                                <figure class="image image-2 paroller-2"><img src="{{asset('public/front_pro/assets/images/resource/about-3.jpg')}}" alt=""></figure>
                                 <div class="image-content">
-                                    <figure class="icon-box"><img src="{{asset('/front_pro/assets/images/icons/icon-8.png')}}" alt=""></figure>
+                                    <figure class="icon-box"><img src="{{asset('public/front_pro/assets/images/icons/icon-8.png')}}" alt=""></figure>
                                     <span>Appointment With</span>
                                     <h4>Specialist</h4>
                                 </div>
@@ -77,13 +77,13 @@
                 </div>
             </div>
         </section>
-
+       
      <section class="process-style-two bg-color-3 centred">
    <div class="pattern-layer">
-      <div class="pattern-1" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-39.png')}}');"></div>
-      <div class="pattern-2" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-40.png')}}');"></div>
-      <div class="pattern-3" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-41.png')}}');"></div>
-      <div class="pattern-4" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-42.png')}}');"></div>
+      <div class="pattern-1" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-39.png')}}');"></div>
+      <div class="pattern-2" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-40.png')}}');"></div>
+      <div class="pattern-3" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-41.png')}}');"></div>
+      <div class="pattern-4" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-42.png')}}');"></div>
    </div>
    <div class="auto-container">
       <div class="sec-title centred">
@@ -91,7 +91,7 @@
          <h2>{{__('message.Appointment Process')}}</h2>
       </div>
       <div class="inner-content">
-         <div class="arrow" style="background-image: url('{{asset('/front_pro/assets/images/icons/arrow-1.png')}}');"></div>
+         <div class="arrow" style="background-image: url('{{asset('public/front_pro/assets/images/icons/arrow-1.png')}}');"></div>
          <div class="row clearfix">
             <div class="col-lg-4 col-md-6 col-sm-12 processing-block">
                <div class="processing-block-two">
@@ -121,7 +121,7 @@
       </div>
    </div>
 </section>
-
+      
         <section class="faq-section pt-125">
             <div class="auto-container">
                 <div class="row clearfix">
@@ -181,7 +181,7 @@
                 </div>
             </div>
         </section>
-
+        
        <section class="agent-section" style="background: aliceblue;">
             <div class="auto-container">
                 <div class="inner-container bg-color-2">

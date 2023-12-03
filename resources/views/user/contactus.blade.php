@@ -6,21 +6,21 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="{{__('message.System Name')}}"/>
 <meta property="og:title" content="{{__('message.System Name')}}"/>
-<meta property="og:image" content="{{asset('/image_web/').'/'.$setting->favicon}}"/>
+<meta property="og:image" content="{{asset('public/image_web/').'/'.$setting->favicon}}"/>
 <meta property="og:image:width" content="250px"/>
 <meta property="og:image:height" content="250px"/>
 <meta property="og:site_name" content="{{__('message.System Name')}}"/>
 <meta property="og:description" content="{{__('message.meta_description')}}"/>
 <meta property="og:keyword" content="{{__('message.Meta Keyword')}}"/>
-<link rel="shortcut icon" href="{{asset('/image_web/').'/'.$setting->favicon}}">
+<link rel="shortcut icon" href="{{asset('public/image_web/').'/'.$setting->favicon}}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 @stop
 @section('content')
 <section class="page-title-two">
    <div class="title-box centred bg-color-2">
       <div class="pattern-layer">
-         <div class="pattern-1" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-70.png')}}');"></div>
-         <div class="pattern-2" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-71.png')}}');"></div>
+         <div class="pattern-1" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-70.png')}}');"></div>
+         <div class="pattern-2" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-71.png')}}');"></div>
       </div>
       <div class="auto-container">
          <div class="title">
@@ -39,8 +39,8 @@
 </section>
 <section class="information-section sec-pad centred bg-color-3">
    <div class="pattern-layer">
-      <div class="pattern-1" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-88.png')}}');"></div>
-      <div class="pattern-2" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-89.png')}}');"></div>
+      <div class="pattern-1" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-88.png')}}');"></div>
+      <div class="pattern-2" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-89.png')}}');"></div>
    </div>
    <div class="auto-container">
       <div class="sec-title centred">
@@ -51,8 +51,8 @@
          <div class="col-lg-4 col-md-6 col-sm-12 information-column">
             <div class="single-information-block wow fadeInUp animated animated" data-wow-delay="00ms" data-wow-duration="1500ms">
                <div class="inner-box">
-                  <div class="pattern" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-87.png')}}');"></div>
-                  <figure class="icon-box"><img src="{{asset('/front_pro/assets/images/icons/icon-20.png')}}" alt=""></figure>
+                  <div class="pattern" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-87.png')}}');"></div>
+                  <figure class="icon-box"><img src="{{asset('public/front_pro/assets/images/icons/icon-20.png')}}" alt=""></figure>
                   <h3>{{__('message.Email')}}</h3>
                   <p>
                      <a href="mailto:{{$setting->email}}">{{$setting->email}}</a>
@@ -63,8 +63,8 @@
          <div class="col-lg-4 col-md-6 col-sm-12 information-column">
             <div class="single-information-block wow fadeInUp animated animated" data-wow-delay="300ms" data-wow-duration="1500ms">
                <div class="inner-box">
-                  <div class="pattern" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-87.png')}}');"></div>
-                  <figure class="icon-box"><img src="{{asset('/front_pro/assets/images/icons/icon-21.png')}}" alt=""></figure>
+                  <div class="pattern" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-87.png')}}');"></div>
+                  <figure class="icon-box"><img src="{{asset('public/front_pro/assets/images/icons/icon-21.png')}}" alt=""></figure>
                   <h3>{{__('message.Phone Number')}}</h3>
                   <p>
                      <a href="tel:23055873407">{{$setting->phone}}</a><br />
@@ -75,8 +75,8 @@
          <div class="col-lg-4 col-md-6 col-sm-12 information-column">
             <div class="single-information-block wow fadeInUp animated animated" data-wow-delay="600ms" data-wow-duration="1500ms">
                <div class="inner-box">
-                  <div class="pattern" style="background-image: url('{{asset('/front_pro/assets/images/shape/shape-87.png')}}');"></div>
-                  <figure class="icon-box"><img src="{{asset('/front_pro/assets/images/icons/icon-22.png')}}" alt=""></figure>
+                  <div class="pattern" style="background-image: url('{{asset('public/front_pro/assets/images/shape/shape-87.png')}}');"></div>
+                  <figure class="icon-box"><img src="{{asset('public/front_pro/assets/images/icons/icon-22.png')}}" alt=""></figure>
                   <h3>{{__('message.Address')}}</h3>
                   <p>
                      {{$setting->address}}

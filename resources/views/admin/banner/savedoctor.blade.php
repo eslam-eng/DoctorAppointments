@@ -38,10 +38,10 @@
                                           <input type="hidden" name="real_basic_img" id="real_basic_img" value="<?= isset($data->image)?$data->image:""?>"/>
                                           <?php
                                              if(isset($data->image)){
-                                                 $path=asset('public/upload/doctors')."/".$data->image;
+                                                 $path=asset('upload/doctors')."/".$data->image;
                                              }
                                              else{
-                                                 $path=asset('public/upload/profile/profile.png');
+                                                 $path=asset('upload/profile/profile.png');
                                              }
                                              ?>
                                           <img src="{{$path}}" alt="..." class="img-thumbnail imgsize"  id="basic_img" >

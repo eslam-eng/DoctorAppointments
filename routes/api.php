@@ -58,7 +58,6 @@ Route::get("checkholiday",[ApiController::class,"checkholiday"]);
 
 Route::get("get_all_doctor",[ApiController::class,"get_all_doctor"]);
 
-
 Route::get("get_subscription_list",[ApiController::class,"get_subscription_list"]);
 
 Route::post("place_subscription",[ApiController::class,"place_subscription"]);
@@ -73,21 +72,6 @@ Route::any("bannerlist",[ApiController::class,"banner_list"]);
 
 Route::any("income_report",[ApiController::class,"income_report"]);
 
+Route::any("data_list",[ApiController::class,"data_list"]);
 Route::any("about",[ApiController::class,"about"]);
 Route::any("privecy",[ApiController::class,"privecy"]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

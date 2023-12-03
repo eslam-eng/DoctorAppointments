@@ -236,7 +236,7 @@ footer {
                   <div class="col-md-4 types flex justify-space-between">
                     <div class="type" id="pay_braintree" onclick="changepayselection('braintree')">
                         <div class="logo">
-                          <img src="{{asset('/img/braintree_new.png')}}" style="height: 60px;" />
+                          <img src="{{asset('public/img/braintree_new.png')}}" style="height: 60px;" />
                         </div>
                       </div>
                   </div>

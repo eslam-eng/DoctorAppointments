@@ -294,6 +294,7 @@
          "Please"=>"Please",
          "Your Account"=>"Your Account",
          "Password Change Successfully"=>"Password Change Successfully",
+         "Profile Update Successfully"=>"Profile Update Successfully",
          "Email Id Already Use By Other User"=>"Email Id Already Use By Other User",
          "Code Expired"=>"Code Expired",
          "pwd_reset"=>"Password Reset Successfully",

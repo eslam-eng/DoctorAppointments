@@ -11,14 +11,13 @@ use DataTables;
 
 class BannerController extends Controller
 {
-
     public function showbanner(){
         return view("admin.banner.default");
     }
 
     public function bannertable(){
          $banner =Banner::get();
-
+             
          return DataTables::of($banner)
             ->editColumn('id', function ($banner) {
                 return $banner->id;
@@ -29,18 +28,18 @@ class BannerController extends Controller
                 }else{
                     return asset("public/upload/doctors/doctor_default.png");
                 }
-
+                
             })
             ->editColumn('action', function ($banner) {
-
+            	
                  $edit= $banner->id;
-
+                 
                  $delete= url('admin/deletebanner',array('id'=>$banner->id));
-
+                 
                  $return = '<a   data-toggle="modal" style="margin-right: 10px;" data-target="#Backdrop"><i class="fa fa-edit f-s-25" style="color: #5870e2;" onclick="edit_img('.$edit.')" style="margin-right: 10px;"></i></a><a onclick="delete_record(' . "'" . $delete . "'" . ')" rel="tooltip" title="" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-trash f-s-25"></i></a>';
                  return $return;
             })
-
+            
             ->make(true);
     }
 
@@ -56,16 +55,16 @@ class BannerController extends Controller
                     $file->move($destinationPath,$picture);
 
                     $banner = new Banner();
-                    $banner->image = $picture;
+                    $banner->image = $picture; 
                     $banner->save();
                 }
             }
         else{
             $image='';
         }
+        
 
-
-        Session::flash('message',__("message.Banner Add Successfully"));
+        Session::flash('message',__("message.Banner Add Successfully")); 
         Session::flash('alert-class', 'alert-success');
         return redirect()->back();
 
@@ -76,7 +75,7 @@ class BannerController extends Controller
         if($banner){
             $banner->delete();
         }
-        Session::flash('message',__("message.Banner Delete Successfully"));
+        Session::flash('message',__("message.Banner Delete Successfully")); 
         Session::flash('alert-class', 'alert-success');
         return redirect()->back();
      }
@@ -105,8 +104,8 @@ class BannerController extends Controller
                              unlink($image_path);
                         }
                         catch(Exception $e) {
-
-                        }
+                          
+                        }                        
                   }
         }else{
         	$img_url= $rel_url;
@@ -116,7 +115,7 @@ class BannerController extends Controller
         $banners->image =$img_url;
         $banners->save();
 
-     	Session::flash('message',__("message.Banner Edit Successfully"));
+     	Session::flash('message',__("message.Banner Edit Successfully")); 
         Session::flash('alert-class', 'alert-success');
         return redirect()->back();
      }

@@ -53,20 +53,20 @@ class FrontController extends Controller
             }else{
                 $ls->is_fav=0;
             }
-
+            
           }else{
             $ls->is_fav=0;
           }
-
+          
           $main_array[]=$ls;
        }
-
+       
 
        $setting=Setting::find(1);
        $department=Services::take(8)->get();
-       return view('user.home',['department' => $department,'doctorlist'=>$main_array,'setting' => $setting]);
+       return view('user.home')->with("department",$department)->with("doctorlist",$main_array)->with("setting",$setting);
     }
-
+    
      public function deposit_payment(Request $request)
     {
         // dd($request);
@@ -199,10 +199,10 @@ class FrontController extends Controller
                                 });
                           } catch (\Exception $e) {
                           }
-
-                           Session::flash('message',__("message.Mail Send Successfully"));
+                          
+                           Session::flash('message',__("message.Mail Send Successfully")); 
                            Session::flash('alert', 'sucess');
-
+                           
                       }elseif($checkdoctor){
                            $code=mt_rand(100000, 999999);
                           $store=array();
@@ -220,14 +220,14 @@ class FrontController extends Controller
                                 });
                           } catch (\Exception $e) {
                           }
-
-                           Session::flash('message',__("message.Mail Send Successfully"));
+                          
+                           Session::flash('message',__("message.Mail Send Successfully")); 
                            Session::flash('alert', 'sucess');
                       }else{
-                            Session::flash('message',__("message.error mail sending"));
-                            Session::flash('alert', 'danger');
-
-                      }
+                            Session::flash('message',__("message.error mail sending")); 
+                            Session::flash('alert', 'danger');   
+                          
+                      }   
                       return redirect()->back();
     }
     public function addnewsletter(Request $request){
@@ -237,7 +237,7 @@ class FrontController extends Controller
             $store=new Newsletter();
             $store->email=$email;
             $store->save();
-        }
+        }        
         return "done";
     }
 
@@ -246,8 +246,8 @@ class FrontController extends Controller
        $department=Services::all();
        return view('user.viewspecialist')->with("department",$department)->with("setting",$setting);
     }
-
-
+    
+    
 
 
 
@@ -282,8 +282,8 @@ class FrontController extends Controller
         }else{
 			return redirect("/");
 		}
-
-
+        
+        
         $day=date('N',strtotime(date("Y-m-d")))-1;
         $datasc=Schedule::with('getslotls')->where("doctor_id",$id)->where("day_id",$day)->get();
         $main=array();
@@ -304,14 +304,14 @@ class FrontController extends Controller
                           $ka['is_book']='0';
                       }
                       $slotlist['slottime'][]=$ka;
-
+                      
                   }
               }
               $main[]=$slotlist;
-
-            }
+              
+            } 
         }
-
+       
         $setting=Setting::find(1);
         $gateway = new \Braintree\Gateway([
                       'environment' => env('BRAINTREE_ENV'),
@@ -321,13 +321,13 @@ class FrontController extends Controller
                  ]);
         $token=$gateway->ClientToken()->generate();
         $date = $this->getsitedate();
-
+        
         $arr = array();
-         $data1 = PaymentGatewayDetail::all();
+         $data1 = PaymentGatewayDetail::all();       
          foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
          }
-
+         
         $getdoctorhoilday = Doctor_Hoilday::where("start_date","<=",$date)->where("end_date",">=",$date)->where("doctor_id",$id)->first();
         return view("user.viewdoctor")->with("data",$data)->with("setting",$setting)->with("schedule",$main)->with("token",$token)->with("getdoctorhoilday",$getdoctorhoilday)->with("paymentdetail",$arr);
     }
@@ -358,7 +358,7 @@ class FrontController extends Controller
         }
 
 
-
+           
         foreach ($doctorslist as $k) {
             $k->avgratting=Review::where('doc_id',$k->id)->avg('rating');
             $k->totalreview=count(Review::where('doc_id',$k->id)->get());
@@ -369,12 +369,12 @@ class FrontController extends Controller
               }else{
                   $k->is_fav=0;
               }
-
+              
             }else{
               $k->is_fav=0;
             }
-        }
-
+        }   
+       
         return view("user.searchdoctor")->with("services",$services)->with("setting",$setting)->with("doctorlist",$doctorslist)->with("term",$term)->with("type",$type)->with("doctorslistmap",$doctorslistmap);
     }
 
@@ -382,7 +382,7 @@ class FrontController extends Controller
         $setting=Setting::find(1);
         return view("user.contactus")->with("setting",$setting);
     }
-
+    
     public function privacy_policy(){
         $setting=Setting::find(1);
         return view("user.privacy_policy")->with("setting",$setting);
@@ -436,7 +436,7 @@ class FrontController extends Controller
         }else{
             return 0;
         }
-
+        
     }
 
     public function getschedule(Request $request){
@@ -453,17 +453,17 @@ class FrontController extends Controller
         $store->subject=$request->get("subject");
         $store->message=$request->get("message");
         $store->save();
-        Session::flash('message',__('message.Thank you for getting in touch!'));
+        Session::flash('message',__('message.Thank you for getting in touch!')); 
         Session::flash('alert', 'danger');
         return redirect()->back();
     }
-
+    
     public function privacy_front_app(){
         $data=About::find(1);
         $setting=Setting::find(1);
         return view('user.privacy',compact('data','setting'));
     }
-
+    
     public function accountdeletion(){
         $data=About::find(1);
         $setting=Setting::find(1);
@@ -475,31 +475,31 @@ class FrontController extends Controller
       $setting=Setting::find(1);
       return view('admin.about',compact('data','setting'));
     }
-
+    
     public function admin_privacy(){
       $data=About::find(1);
       $setting=Setting::find(1);
       return view('admin.terms',compact('data','setting'));
     }
-
+    
     public function privacy_admin(){
       $data=About::find(1);
       $setting=Setting::find(1);
       return view('user.terms',compact('data','setting'));
     }
-
+    
     public function app_privacy(){
       $data=About::find(1);
       $setting=Setting::find(1);
       return view('admin.privecy-app',compact('data','setting'));
     }
-
+    
     public function data_deletion(){
       $data=About::find(1);
       $setting=Setting::find(1);
       return view('admin.data-deletion',compact('data','setting'));
     }
-
+    
    public function edit_about(Request $request){
       $data=About::find(1);
        $setting=Setting::find(1);
@@ -507,7 +507,7 @@ class FrontController extends Controller
        $data->save();
       return redirect('admin/about');
     }
-
+    
     public function edit_terms(Request $request){
       $data=About::find(1);
       $setting=Setting::find(1);
@@ -515,7 +515,7 @@ class FrontController extends Controller
        $data->save();
       return redirect('admin/Terms_condition');
     }
-
+    
     public function edit_app_privacy(Request $request){
       $data=About::find(1);
       $setting=Setting::find(1);
@@ -523,7 +523,7 @@ class FrontController extends Controller
        $data->save();
       return redirect('admin/app_privacy');
     }
-
+    
     public function edit_data_deletion(Request $request){
       $data=About::find(1);
       $setting=Setting::find(1);

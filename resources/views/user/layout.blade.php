@@ -380,7 +380,7 @@
                 date.setTime(date.getTime() + (expirationInDays * 24 * 60 * 60 * 1000));
                 document.cookie = name + '=' + value
                     + ';expires=' + date.toUTCString()
-                    + ';domain=' + COOKIE_DOMAIN
+                    // + ';domain=' + COOKIE_DOMAIN
                     + ';path=/'
                     + '';
             }

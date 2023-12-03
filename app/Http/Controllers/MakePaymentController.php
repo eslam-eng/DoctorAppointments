@@ -417,6 +417,7 @@ class MakePaymentController extends Controller
       }
       $curl = curl_init();
         $reference = $request->get("reference");
+        
         if(!$reference){
           die('No reference supplied');
         }
@@ -431,15 +432,12 @@ class MakePaymentController extends Controller
         ));
         $response = curl_exec($curl);
         $err = curl_error($curl);
-        if($err){
-         return redirect()->route('payment-failed');
-        }
+      
         $tranx = json_decode($response);
         if(!$tranx->status){
          return redirect()->route('payment-failed');
         }
         if('success' == $tranx->data->status){
-                           if(Session::get("type")==1){
                                 $data = BookAppointment::where("transaction_id",$reference)->first();
                                 $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
                                 $data->payment_mode="Paystack";
@@ -458,24 +456,8 @@ class MakePaymentController extends Controller
                                 $user=User::find(1);
                                 $android=$this->send_notification_android($user->android_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 $ios=$this->send_notification_IOS($user->ios_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
-                                try {
-                                        $user=Doctors::find($request->get("doctor_id")); 
-                                            
-                                        $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
-                                            $message->to($user->email,$user->name)->subject(__('message.System Name'));
-                                        });
-                                                          
-                                } catch (\Exception $e) {
-                                }
-                            }
-                            if(Session::get("type")==2){
-                                $data = Subscriber::where("transaction_id",$reference)->first();
-                                $data->payment_type="4";
-                                $data->transaction_id=$reference;
-                                $data->status='2';
-                                $data->is_complet='1';
-                                $data->save();
-                            }
+                                
+                            
             $doctor_id = $data->doctor_id;
             Session::flash('message',__('message.Appointment Book Successfully')); 
             Session::flash('alert-class', 'alert-success');

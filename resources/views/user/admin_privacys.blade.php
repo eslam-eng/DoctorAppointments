@@ -38,14 +38,14 @@ Privecy | Admin Dashboard
                           </div>
                           <div class="modal-body">
                             <form action="{{url('admin/edit_privecy')}}" method="post" enctype="multipart/form-data">
-                              {{csrf_field()}}
+                              {{csrf_field()}} 
                               <div class="form-group">
                                 <label>Privecy</label>
-
+                                
                                 <input type="hidden" class="form-control" id="id" name="id" required="" value="{{isset($data->id)?$data->id:0}}">
 
                                 <textarea class="form-control" name="privecy">{{isset($data->privecy)?$data->privecy:''}}</textarea>
-
+                                
                               </div>
                               <button name="update_about" type="submit" class="btn btn-md btn-success ">submit</button>
                             </form>
@@ -54,19 +54,19 @@ Privecy | Admin Dashboard
                       </div>
                     </div>
                   </div>
-                </div>
+                </div>          
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </div> 
+      </div> 
+    </div> 
   </div>
 </div>
 
-<script src="{{asset('/js/vendor/jquery-2.1.4.min.js')}}"></script>
- <script src="{{asset('/ckeditor/ckeditor.js')}}"></script>
+<script src="{{asset('public/js/vendor/jquery-2.1.4.min.js')}}"></script>
+ <script src="{{asset('public/ckeditor/ckeditor.js')}}"></script>
   <script type="text/javascript">
-    $(document).ready(function ()
+    $(document).ready(function () 
       {
           CKEDITOR.replace('privecy');
       });
