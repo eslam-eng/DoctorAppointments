@@ -17,6 +17,7 @@
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "kalnoy/nestedset": "^6.0",
         "kingflamez/laravelrave": "^4.2",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
@@ -53,7 +54,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

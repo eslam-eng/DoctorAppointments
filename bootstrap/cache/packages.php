@@ -70,6 +70,13 @@
       0 => 'Fruitcake\\Cors\\CorsServiceProvider',
     ),
   ),
+  'kalnoy/nestedset' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Kalnoy\\Nestedset\\NestedSetServiceProvider',
+    ),
+  ),
   'kingflamez/laravelrave' => 
   array (
     'providers' => 

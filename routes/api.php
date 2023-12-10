@@ -26,6 +26,7 @@ Route::any("register",[ApiController::class,"postregisterpatient"]);
 Route::any("registernew",[ApiController::class,"postregisterpatient"]);
 Route::any("user_reject_appointment",[ApiController::class,"user_reject_appointment"]);
 
+Route::any("doctorregister",[ApiController::class,"doctorregister"]);
 Route::any("savetoken",[ApiController::class,"storetoken"]);
 Route::any("login",[ApiController::class,"showlogin"]);
 Route::any("doctorregister",[ApiController::class,"doctorregister"]);
@@ -75,3 +76,6 @@ Route::any("income_report",[ApiController::class,"income_report"]);
 Route::any("data_list",[ApiController::class,"data_list"]);
 Route::any("about",[ApiController::class,"about"]);
 Route::any("privecy",[ApiController::class,"privecy"]);
+
+//start Doctors Apis
+Route::apiResource('doctors',\App\Http\Controllers\API\DoctorController::class);
