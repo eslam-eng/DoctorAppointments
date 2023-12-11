@@ -40,19 +40,32 @@ class LocationsService extends BaseService
         return $this->model->defaultOrder()->descendantsOf($location_id) ;
     }
 
-    public function create(array $data = [])
+    public function store(array $locationData = []): mixed
     {
-        return $this->getQuery()->create($data);
+        $locationData['is_active'] = isset($locationData['is_active'])  ?  1 :  0;
+        return $this->getQuery()->create($locationData);
     }
 
-    public function update(Location $location , array $data = []): bool
+    /**
+     * @param int $id
+     * @param array $locationData
+     * @return false
+     */
+    public function update(int $id,array $locationData): bool
     {
-        return $location->update($data);
+        $location = $this->findById($id);
+        $locationData['status'] = isset($locationData['status'])  ?  1 :  0;
+        return $location->update($locationData);
     }
 
-    public function delete(Location $location): ?bool
+    public function delete($id): bool
     {
-        return $location->delete();
+        return  $this->getQuery(['id'=>$id])->delete();
+    }
+
+    public function getLocationById($id)
+    {
+        return Location::find($id);
     }
 
 }

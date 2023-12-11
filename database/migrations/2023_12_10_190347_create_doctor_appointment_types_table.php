@@ -16,7 +16,8 @@ class CreateDoctorAppointmentTypesTable extends Migration
 
         Schema::create('doctor_appointment_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Doctors::class)->constrained('doctors')->cascadeOnDelete();
+            $table->integer('doctor_id');
+            $table->foreign('doctor_id')->references('id')->on('doctors')->cascadeOnDelete();
             $table->tinyInteger('appointment_type');
             $table->decimal('price');
             $table->enum('status',[0,1])->default(1);

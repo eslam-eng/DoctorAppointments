@@ -36,7 +36,7 @@ class DoctorController extends Controller
         try {
             $data = $request->validated();
             $this->doctorService->create($data);
-            return apiResponse(null,__('message.Doctor Add Successfully'));
+            return apiResponse(message: __('message.Doctor Add Successfully'));
         }catch (\Exception $exception)
         {
             return apiResponse(null,$exception->getMessage(),500);

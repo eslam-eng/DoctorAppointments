@@ -15,7 +15,8 @@ class CreateDoctorBranchesTable extends Migration
     {
         Schema::create('doctor_branches', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Doctors::class)->constrained('doctors')->cascadeOnDelete();
+            $table->integer('doctor_id');
+            $table->foreign('doctor_id')->references('id')->on('doctors')->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\Branch::class)->constrained('branches')->cascadeOnDelete();
             $table->timestamps();
         });
