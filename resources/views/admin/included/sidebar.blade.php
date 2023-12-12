@@ -92,14 +92,14 @@
                 <li>
                     <a href="{{route('countries.index')}}" class="waves-effect">
                         <i class="uil-home"></i>
-                        <span>{{__("message.countries")}}</span>
+                        <span>{{__("message.countries_title")}}</span>
                     </a>
                 </li>
 
                 <li>
                     <a href="{{route('cities.index')}}" class="waves-effect">
                         <i class="uil-home"></i>
-                        <span>{{__("message.cities")}}</span>
+                        <span>{{__("message.cities_title")}}</span>
                     </a>
                 </li>
 

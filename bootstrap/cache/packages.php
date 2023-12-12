@@ -107,6 +107,17 @@
       'Html' => 'Collective\\Html\\HtmlFacade',
     ),
   ),
+  'livewire/livewire' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Livewire\\LivewireServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Livewire' => 'Livewire\\Livewire',
+    ),
+  ),
   'maatwebsite/excel' => 
   array (
     'providers' => 
@@ -137,6 +148,13 @@
     'providers' => 
     array (
       0 => 'Spatie\\CookieConsent\\CookieConsentServiceProvider',
+    ),
+  ),
+  'spatie/laravel-translatable' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\Translatable\\TranslatableServiceProvider',
     ),
   ),
   'stephenjude/paystack-lite' => 

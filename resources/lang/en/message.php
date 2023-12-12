@@ -1,4 +1,4 @@
-<?php 
+<?php
 
    return [
          "RTL"=>"1", // 0=>RTL ,1=>LTR
@@ -52,6 +52,7 @@
    		"Enter Doctor Name"=>"Enter Doctor Name",
    		"specialities"=>"Specialities",
    		"select"=>"Select",
+   		"select_country"=>"Select Country",
    		"Enter Phone"=>"Enter Phone",
    		"Working Time"=>"Working Time",
    		"Enter Working Time"=>"Enter Working Time",
@@ -445,4 +446,11 @@
         "News Send Successfully"=>"News Send Successfully",
         "Razorpay"=>"Razorpay",
         "Paystack"=>"Paystack",
-   ]; 
+       'location_title'=>'name',
+       'cities_title'=>'Cities',
+       'cities_list'=>'Cities List',
+       'countries_title'=>'Countries',
+       'countries_list'=>'Countries List',
+       'add_country'=>'Add Country',
+       'location_title'=>'name',
+   ];

@@ -2,58 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Datatables\AreasDataTable;
+use App\Http\Requests\Locations\Area\AreaRequest;
+use App\Models\Location;
+use App\Services\LocationsService;
 use Illuminate\Http\Request;
-use App\DataTables\GovernoratesDataTable;
-use App\Http\Requests\StoreLocationRequest;
-use App\Services\LocationService;
+
 
 class AreaController extends Controller
 {
 
-    public function __construct(private LocationService $locationService)
+    public function __construct(private LocationsService $locationService)
     {
 
     }
 
-    public function index(GovernoratesDataTable $dataTables,Request $request)
+    public function index(AreasDataTable $dataTables,Request $request)
     {
-        userCan(request: $request, permission: 'view_governorate');
-        $request = $request->merge(['depth'=> 1,'is_active'=>$request->is_active??1]);
-        return $dataTables->with(['filters'=>$request->all()])->render('dashboard.locations.governorate.index');
+        $filters = array_filter($request->get('filters', []), function ($value) {
+            return ($value !== null && $value !== false && $value !== '');
+        });
+
+        $filters['depth'] = 2;
+
+        return $dataTables->with(['filters'=>$filters])->render('admin.locations.area.index');
     }
 
-    public function getAllGovernorates(Request $request)
+    public function create()
     {
-        $filter =[
-            // 'depth'=> 1,
-            'is_active'=>1,
-            'parent' =>  $request->country_id,
-        ];
-        $governorates = $this->locationService->getAll($filter);
-        return $governorates;
+        return view('admin.locations.area.create');
     }
 
-    public function create(Request $request)
+    public function store(AreaRequest $request)
     {
-        userCan(request: $request, permission: 'create_governorate');
-        $filter = ['depth'=> 0];
-        $countries = $this->locationService->getAll($filter);
-        return view('dashboard.locations.governorate.create',['countries'=>$countries]);
-    }
-
-    public function store(StoreLocationRequest $request)
-    {
-        userCan(request: $request, permission: 'create_governorate');
-        //first forget cash
-        cache()->forget('home-api');
         try {
-            $this->locationService->store($request->all());
-            $toast=[
-                'type'=>'success',
-                'title'=>trans('lang.title'),
-                'message'=> 'governorate saved Successfully'
+            $locationData=[
+                'title'=>[
+                    'en'=>$request->title['en'],
+                    'ar'=>$request->title['ar'] ?? $request->title['en']
+                ],
+                'parent_id'=>$request->parent_id,
+                'status' =>$request->status,
             ];
-            return redirect()->route('governorate.index')->with('toast', $toast);
+            $this->locationService->store($locationData);
+            $toast=['type'=>'success','title'=>trans('message.Success'),'message'=> trans('message.city_saved_Successfully')];
+            return redirect(route('areas.index'))->with('toast',$toast);
         }catch (\Exception $exception)
         {
             $toast=[
@@ -65,40 +58,30 @@ class AreaController extends Controller
         }
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Location $area)
     {
-        userCan(request: $request, permission: 'edit_governorate');
-        $governorate = $this->locationService->getLocationById($id);
-        if (!$governorate)
-        {
-            $toast = [
-              'type'=>'error',
-              'title'=>trans('error'),
-              'message'=>trans('lang.not_found')
-            ];
-            return back()->with('toast',$toast);
-        }
-        $filter =[
-            'depth'=> 0,
-            'is_active'=>1
-        ];
-        $countries = $this->locationService->getAll($filter);
-        return view('dashboard.locations.governorate.edit',['governorate' => $governorate, 'countries' =>$countries]);
+        return view('admin.locations.area.edit',['area' => $area]);
     }
 
-    public function update($id, StoreLocationRequest $request)
+    public function update(Location $area, AreaRequest $request)
     {
-        userCan(request: $request, permission: 'edit_governorate');
-        //first forget cash
-        cache()->forget('home-api');
         try {
-            $this->locationService->update($id, $request->all());
+            $locationData=[
+                'title'=>[
+                    'en'=>$request->title['en'],
+                    'ar'=>$request->title['ar'] ?? $request->title['en']
+                ],
+                'parent_id'=>$request->parent_id,
+                'status' =>$request->status,
+            ];
+            $this->locationService->update($area,$locationData);
+
             $toast=[
                 'type' => 'success',
                 'title'=>trans('lang.success'),
                 'message'=>trans('lang.success')
             ];
-            return  redirect(route('governorate.index'))->with('toast',$toast);
+            return  redirect(route('areas.index'))->with('toast',$toast);
         }catch (\Exception $exception)
         {
             $toast = [
@@ -110,25 +93,14 @@ class AreaController extends Controller
         }
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(Location $area)
     {
-        userCan(request: $request, permission: 'delete_governorate');
-        //first forget cash
-        cache()->forget('home-api');
         try {
-            $result =  $this->locationService->delete($id);
-            if(!$result)
-                return apiResponse(message: trans('lang.not_found'),code: 404);
+            $this->locationService->delete($area);
             return apiResponse(message: trans('lang.success'));
-
         }catch (\Exception $exception)
         {
             return apiResponse(message: $exception->getMessage(),code: 422);
         }
-    }
-
-    public function show($id)
-    {
-
     }
 }

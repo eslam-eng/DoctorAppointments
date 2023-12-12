@@ -5,21 +5,25 @@ namespace App\Services;
 use App\Models\Location;
 use App\QueryFilters\LocationsFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class LocationsService extends BaseService
 {
 
-    public $model;
 
-    public function __construct(Location $model)
+    public function __construct(public Location $model)
     {
-        $this->model = $model;
     }
 
-    public function getQuery(?array $filters = []): ?Builder
+    public function getModel(): Model
     {
-        return parent::getQuery($filters)
-            ->when(! empty($filters), function (Builder $builder) use ($filters) {
+        return $this->model;
+    }
+
+    public function getQuery(?array $filters = [],?array $relations = [],): ?Builder
+    {
+        return parent::getQuery(filters: $filters,relations: $relations)
+            ->when(!empty($filters), function (Builder $builder) use ($filters) {
                 return $builder->filter(new LocationsFilter($filters));
             });
     }
@@ -27,7 +31,13 @@ class LocationsService extends BaseService
 
     public function datatable(array $filters = []): ?Builder
     {
-        return $this->getQuery($filters);
+        $relations = ['parent'];
+        return $this->getQuery(filters: $filters,relations: $relations);
+    }
+
+    public function getCountries(): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return $this->getQuery(['depth'=>0])->get();
     }
 
     public function getLocationAncestors($id)
@@ -37,12 +47,11 @@ class LocationsService extends BaseService
 
     public function getLocationDescendants($location_id)
     {
-        return $this->model->defaultOrder()->descendantsOf($location_id) ;
+        return $this->model->defaultOrder()->descendantsOf($location_id);
     }
 
     public function store(array $locationData = []): mixed
     {
-        $locationData['is_active'] = isset($locationData['is_active'])  ?  1 :  0;
         return $this->getQuery()->create($locationData);
     }
 
@@ -51,16 +60,18 @@ class LocationsService extends BaseService
      * @param array $locationData
      * @return false
      */
-    public function update(int $id,array $locationData): bool
+    public function update(Location|int $location, array $locationData): bool
     {
-        $location = $this->findById($id);
-        $locationData['status'] = isset($locationData['status'])  ?  1 :  0;
+        if (is_int($location))
+            $location = $this->findById($location);
         return $location->update($locationData);
     }
 
-    public function delete($id): bool
+    public function delete(Location|int $location): bool
     {
-        return  $this->getQuery(['id'=>$id])->delete();
+        if (is_int($location))
+            $location = $this->findById($location);
+        return $location->delete();
     }
 
     public function getLocationById($id)

@@ -18,11 +18,11 @@ class BaseService
     }
 
 
-    public function getQuery(?array $filters = []): ?Builder
+    public function getQuery(?array $filters = [] , ?array $relations = []): ?Builder
     {
         return $this
             ->getModel()
-            ->query();
+            ->query()->with($relations);
     }
     /**
      * @throws NotFoundException

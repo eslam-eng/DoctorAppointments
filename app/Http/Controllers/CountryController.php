@@ -2,45 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Datatables\CountriesDataTable;
+use App\Http\Requests\Locations\Country\CountryRequest;
+use App\Models\Location;
+use App\Services\LocationsService;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreLocationRequest;
-use App\DataTables\CountriesDataTable;
-use App\Models\Currency;
-use App\Services\LocationService;
 
 class CountryController extends Controller
 {
 
-    public function __construct(private LocationService $locationService)
+    public function __construct(private LocationsService $locationService)
     {
 
     }
 
     public function index(CountriesDataTable $dataTables,Request $request)
     {
-        userCan(request: $request, permission: 'view_country');
-        $request = $request->merge(['depth'=>0,'is_active'=>$request->is_active??1]);
-        return $dataTables->with(['filters'=>$request->all()])->render('dashboard.locations.country.index');
+        $filters = array_filter($request->get('filters', []), function ($value) {
+            return ($value !== null && $value !== false && $value !== '');
+        });
+        $filters['depth'] = 0 ;
+        return $dataTables->with(['filters'=>$filters])->render('admin.locations.country.index');
     }
 
-    public function create(Request $request)
+    public function create()
     {
-        userCan(request: $request, permission: 'create_country');
-        $currencies = Currency::all();
-        return view('dashboard.locations.country.create', compact('currencies'));
+        $countries = getCountries();
+        $currencies = getCurrencies();
+
+        return view('admin.locations.country.create', ['countries' => $countries,'currencies'=>$currencies]);
     }
 
-    public function store(StoreLocationRequest $request)
+    public function store(CountryRequest $request)
     {
-        userCan(request: $request, permission: 'create_country');
         try {
-            $this->locationService->store($request->all());
+            $countries = collect(getCountries());
+            $country = $countries->firstWhere('code',$request->country_code);
+            $locationData=[
+              'title'=>[
+                  'en'=>$country['name'],
+                  'ar'=>$country['nameAr']
+              ],
+              'currency_code'=>$request->currency_code,
+              'status' =>$request->status,
+            ];
+
+            $this->locationService->store($locationData);
             $toast=[
                 'type'=>'success',
                 'title'=>trans('lang.title'),
                 'message'=> 'country saved Successfully'
             ];
-            return redirect()->route('country.index')->with('toast', $toast);
+            return redirect(route('countries.index'))->with('toast', $toast);
         }catch (\Exception $exception)
         {
             $toast=[
@@ -52,62 +65,55 @@ class CountryController extends Controller
         }
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Location $country)
     {
-        userCan(request: $request, permission: 'edit_country');
-        $country = $this->locationService->getLocationById($id);
-        if (!$country)
-        {
-            $toast = [
-              'type'=>'error',
-              'title'=>trans('error'),
-              'message'=>trans('lang.not_found')
-            ];
-            return back()->with('toast',$toast);
-        }
-        $currencies = Currency::all();
-        return view('dashboard.locations.country.edit',['country' => $country, 'currencies' => $currencies]);
+        $countries = getCountries();
+        $currencies = getCurrencies();
+
+        return view('admin.locations.country.edit',['location' => $country, 'currencies' => $currencies,'countries' => $countries]);
     }
 
-    public function update($id, StoreLocationRequest $request)
+    public function update(Location $country, CountryRequest $request)
     {
-        userCan(request: $request, permission: 'edit_country');
+
         try {
-            $this->locationService->update($id, $request->all());
+            $locationcountries = collect(getCountries());
+            $locationcountry = $locationcountries->firstWhere('code',$request->country_code);
+            $locationData=[
+                'title'=>[
+                    'en'=>$locationcountry['name'],
+                    'ar'=>$locationcountry['nameAr']
+                ],
+                'currency_code'=>$request->currency_code,
+                'status' =>$request->status,
+            ];
+            $this->locationService->update($country, $locationData);
             $toast=[
                 'type' => 'success',
-                'title'=>trans('lang.success'),
-                'message'=>trans('lang.success')
+                'title'=>trans('message.Success'),
+                'message'=>trans('message.Success')
             ];
-            return  redirect(route('country.index'))->with('toast',$toast);
+            return  redirect(route('countries.index'))->with('toast',$toast);
         }catch (\Exception $exception)
         {
             $toast = [
                 'type'=>'error',
-                'title'=>trans('lang.error'),
+                'title'=>trans('message.Error'),
                 'message'=>$exception->getMessage()
             ];
             return back()->with('toast',$toast);
         }
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(Location $country)
     {
-        userCan(request: $request, permission: 'delete_country');
         try {
-            $result =  $this->locationService->delete($id);
-            if(!$result)
-                return apiResponse(message: trans('lang.not_found'),code: 404);
+            $this->locationService->delete($country);
             return apiResponse(message: trans('lang.success'));
-
         }catch (\Exception $exception)
         {
             return apiResponse(message: $exception->getMessage(),code: 422);
         }
     }
 
-    public function show($id)
-    {
-
-    }
 }

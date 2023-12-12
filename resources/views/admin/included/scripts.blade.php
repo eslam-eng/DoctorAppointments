@@ -36,3 +36,5 @@
 <script src="{{asset('/admin_design/layouts/vertical/assets/libs/twitter-bootstrap-wizard/jquery.bootstrap.wizard.min.js')}}"></script>
 <script src="{{asset('/admin_design/layouts/vertical/assets/libs/twitter-bootstrap-wizard/prettify.js')}}"></script>
 <script src="{{asset('/admin_design/layouts/vertical/assets/js/pages/form-wizard.init.js')}}"></script>
+<script src="{{asset('admin_design/layouts/vertical/assets/js/sweetalert.min.js')}}"></script>
+<script src="{{asset('admin_design/layouts/vertical/assets/js/datatable-delete-row.js')}}"></script>

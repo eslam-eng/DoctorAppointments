@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Datatables\CitiesDataTable;
+use App\Http\Requests\Locations\City\CityRequest;
+use App\Models\Location;
 use App\Services\LocationsService;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreLocationRequest;
 class CityController extends Controller
 {
    public function __construct(protected LocationsService $locationService)
@@ -18,24 +19,30 @@ class CityController extends Controller
         $filters = array_filter($request->get('filters', []), function ($value) {
             return ($value !== null && $value !== false && $value !== '');
         });
-        $filters['depth'] = 2;
+        $filters['depth'] = 1;
         return $dataTables->with(['filters'=>$filters])->render('admin.locations.city.index');
     }
 
-    public function create(Request $request)
+    public function create()
     {
-        $filter = ['depth'=> 1];
-        $governorates = $this->locationService->getAll($filter);
-        return view('dashboard.locations.city.create',['governorates'=>$governorates]);
+        $countries = $this->locationService->getCountries();
+        return view('admin.locations.city.create',['countries'=>$countries]);
     }
 
-    public function store(StoreLocationRequest $request)
+    public function store(CityRequest $request)
     {
         try {
-            $this->locationService->store($request->all());
-            $toast=['type'=>'success','title'=>trans('lang.title'),'message'=> trans('lang.city_saved_Successfully')];
-            return redirect(route('city.index'))->with('toast',$toast);
-
+            $locationData=[
+                'title'=>[
+                    'en'=>$request->title['en'],
+                    'ar'=>$request->title['ar'] ?? $request->title['en']
+                ],
+                'parent_id'=>$request->parent_id,
+                'status' =>$request->status,
+            ];
+            $this->locationService->store($locationData);
+            $toast=['type'=>'success','title'=>trans('message.Success'),'message'=> trans('message.city_saved_Successfully')];
+            return redirect(route('cities.index'))->with('toast',$toast);
         }catch (\Exception $exception)
         {
             $toast=['type'=>'error','title'=>trans('lang.error'),'message'=>$exception->getMessage()];
@@ -43,36 +50,30 @@ class CityController extends Controller
         }
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Location $city)
     {
-        $city = $this->locationService->getLocationById($id);
-        if (!$city)
-        {
-            $toast = [
-              'type'=>'error',
-              'title'=>trans('error'),
-              'message'=>trans('lang.not_found')
-            ];
-            return back()->with('toast',$toast);
-        }
-        $filter =[
-            'depth'=> 1,
-            'is_active'=>1
-        ];
-        $governorates = $this->locationService->getAll($filter);
-        return view('dashboard.locations.city.edit',['city' => $city, 'governorates' =>$governorates]);
+        $countries = $this->locationService->getCountries();
+        return view('admin.locations.city.edit',['city' => $city, 'countries' =>$countries]);
     }
 
-    public function update($id, StoreLocationRequest $request)
+    public function update(Location $city, CityRequest $request)
     {
         try {
-            $this->locationService->update($id, $request->all());
+            $locationData=[
+                'title'=>[
+                    'en'=>$request->title['en'],
+                    'ar'=>$request->title['ar'] ?? $request->title['en']
+                ],
+                'parent_id'=>$request->parent_id,
+                'status' =>$request->status,
+            ];
+            $this->locationService->update($city,$locationData);
             $toast=[
                 'type' => 'success',
                 'title'=>trans('lang.success'),
                 'message'=>trans('lang.success')
             ];
-            return  redirect(route('city.index'))->with('toast',$toast);
+            return  redirect(route('cities.index'))->with('toast',$toast);
         }catch (\Exception $exception)
         {
             $toast = [
@@ -84,14 +85,11 @@ class CityController extends Controller
         }
     }
 
-    public function destroy(int $location_id)
+    public function destroy(Location $city)
     {
         try {
-            $result =  $this->locationService->delete($location_id);
-            if(!$result)
-                return apiResponse(message: trans('lang.not_found'),code: 404);
+            $this->locationService->delete($city);
             return apiResponse(message: trans('lang.success'));
-
         }catch (\Exception $exception)
         {
             return apiResponse(message: $exception->getMessage(),code: 422);

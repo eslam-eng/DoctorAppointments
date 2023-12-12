@@ -46,3 +46,19 @@ if (!function_exists('setLanguage')) {
     }
 }
 
+if (!function_exists('getCountries')) {
+
+    function getCountries()
+    {
+        $countries = file_get_contents(storage_path('app/countries-locations.json'));
+        return json_decode($countries, true);
+    }
+}
+if (!function_exists('getCurrencies')) {
+
+    function getCurrencies(): mixed
+    {
+        $currencies = file_get_contents(storage_path('app/currencies.json'));
+        return json_decode($currencies, true);
+    }
+}

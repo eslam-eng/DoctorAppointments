@@ -1,16 +1,10 @@
 <?php
 
-namespace App\DataTables;
+namespace App\Datatables;
 
 use App\Models\Location;
-use App\Services\LocationService;
-use Illuminate\Database\Eloquent\Builder as QueryBuilder;
-use Yajra\DataTables\EloquentDataTable;
-use Yajra\DataTables\Html\Builder as HtmlBuilder;
-use Yajra\DataTables\Html\Button;
+use App\Services\LocationsService;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class CountriesDataTable extends DataTable
@@ -24,28 +18,18 @@ class CountriesDataTable extends DataTable
     public function dataTable($query)
     {
         return datatables($query)
-            ->addColumn('action', function(Location $location){
-                return view('dashboard.locations.country.action',compact('location'))->render();
+            ->addColumn('action', function (Location $location) {
+                return view('admin.locations.country.components._action', ['model'=>$location])->render();
             })
-            ->addcolumn('title', function(Location $location){
-                // $title = json_decode($location->title ?? []);
-                return $location->title ;
-            })
-            // ->addcolumn('title_en', function(Location $location){
-            //     $title = json_decode($location->title ?? []);
-            //     return $title->en ??'';
-            // })
-            ;
+            ->addcolumn('title', function (Location $location) {
+                return $location->title;
+            });
     }
 
-     /**
-     * Get query source of dataTable.
-     *
-     * @param LocationService $locationService
-     */
-    public function query(LocationService $locationService)
+
+    public function query(LocationsService $locationService)
     {
-       return $locationService->queryGet($this->filters);
+        return $locationService->datatable($this->filters);
     }
 
     /**
@@ -58,17 +42,7 @@ class CountriesDataTable extends DataTable
         return $this->builder()
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->parameters([
-                'dom'     => 'Blfrtip',
-                'order'   => [[0, 'desc']],
-                "lengthMenu" => [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                // 'buttons'      => ['export', 'print', 'create'],
-                'buttons'      => [],
-                // 'language' => ['url' => asset('dashboard/assets/js/ar-datatable.json')],
-
-                'responsive'=>true,
-                "bSort" => false
-            ]);
+            ->orderBy(0);
     }
 
     /**
@@ -81,19 +55,16 @@ class CountriesDataTable extends DataTable
         return [
             Column::make('id')
                 ->title("#"),
-            Column::make('slug')
-                ->title(trans('lang.slug')),
+
             Column::make('title')
-                ->title(trans('lang.title')),
-            [
-                'name'=>'action',
-                'data'=>'action',
-                'title'=> 'edit ',
-                'exportable' => false,
-                'printable' => false,
-                'searchable' => false,
-                'orderable' => false,
-            ],
+                ->title(trans('message.location_title')),
+
+            Column::make('currency_code')
+                ->title(trans('message.currency')),
+
+            Column::computed('action')->title(__('message.action'))
+                ->exportable(false)
+                ->printable(false),
         ];
     }
 

@@ -1,4 +1,4 @@
 <!--begin::Table-->
-{{ $dataTable->table(['class'=>'tabletable-bordered table-striped gy-5']) }}
+{{ $dataTable->table(['class'=>'table table-bordered table-striped']) }}
 <!--end::Table-->
 
