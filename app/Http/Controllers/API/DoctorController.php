@@ -9,28 +9,22 @@ use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
-    public $doctorService ;
-    public function __construct(DoctorsService $doctorService)
+    public function __construct(public DoctorsService $doctorService)
     {
-        $this->doctorService = $doctorService;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Pagination\Paginator
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filters = $request->all();
+        return $this->doctorService->paginate(filters: $filters);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(DoctorRegisterRequest $request)
     {
         try {

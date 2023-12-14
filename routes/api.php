@@ -19,6 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['middleware' => 'auth:sanctum'],function (){
+    Route::apiResource('doctors',\App\Http\Controllers\API\DoctorController::class);
+
+});
 
 Route::any("searchdoctor",[ApiController::class,"showsearchdoctor"]);
 Route::any("nearbydoctor",[ApiController::class,"nearbydoctor"]);
@@ -77,5 +81,3 @@ Route::any("data_list",[ApiController::class,"data_list"]);
 Route::any("about",[ApiController::class,"about"]);
 Route::any("privecy",[ApiController::class,"privecy"]);
 
-//start Doctors Apis
-Route::apiResource('doctors',\App\Http\Controllers\API\DoctorController::class);

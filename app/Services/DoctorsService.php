@@ -2,50 +2,48 @@
 
 namespace App\Services;
 
+use App\Models\Doctor;
 use App\Models\Location;
-use App\QueryFilters\LocationsFilter;
+use App\QueryFilters\DoctorsFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class DoctorsService extends BaseService
 {
-
-    public $model;
-
-    public function __construct(Location $model)
+    public function __construct(public Doctor $model)
     {
-        $this->model = $model;
     }
 
-    public function getQuery(?array $filters = []): ?Builder
+    public function getModel(): Model
     {
-        return parent::getQuery($filters)
-            ->when(! empty($filters), function (Builder $builder) use ($filters) {
-                return $builder->filter(new LocationsFilter($filters));
+        return $this->model;
+    }
+
+    public function getQuery(?array $filters = [], ?array $relations = [],): ?Builder
+    {
+        return parent::getQuery($filters)->with($relations)
+            ->when(!empty($filters), function (Builder $builder) use ($filters) {
+                return $builder->filter(new DoctorsFilter($filters));
             });
     }
-
-
-    public function datatable(array $filters = []): ?Builder
+    public function datatable(array $filters = [],?array $relations = []): ?Builder
     {
-        return $this->getQuery($filters);
+        return $this->getQuery($filters,$relations);
     }
 
-    public function getLocationAncestors($id)
+    public function paginate(array $filters = [],?array $relations = []): \Illuminate\Contracts\Pagination\Paginator
     {
-        return $this->model->defaultOrder()->ancestorsAndSelf($id);
+        return $this->getQuery($filters,$relations)->simplePaginate();
     }
 
-    public function getLocationDescendants($location_id)
-    {
-        return $this->model->defaultOrder()->descendantsOf($location_id) ;
-    }
+
 
     public function create(array $data = [])
     {
         return $this->getQuery()->create($data);
     }
 
-    public function update(Location $location , array $data = []): bool
+    public function update(Location $location, array $data = []): bool
     {
         return $location->update($data);
     }

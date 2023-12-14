@@ -18,6 +18,9 @@ class CreateBranchesTable extends Migration
             $table->string('name');
             $table->foreignIdFor(\App\Models\Location::class)->constrained('locations');
             $table->tinyInteger('status')->default(1);
+            $table->string('phone')->nullable();
+            $table->string('map_url')->nullable();
+            $table->string('address')->nullable();
             $table->timestamps();
         });
     }

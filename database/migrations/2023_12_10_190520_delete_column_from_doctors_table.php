@@ -14,8 +14,16 @@ class DeleteColumnFromDoctorsTable extends Migration
     public function up()
     {
         Schema::table('doctors', function (Blueprint $table) {
-//            $table->dropColumn(['consultation_fees','title','institution_name','birth_name','spouse_name','state','city']);
-            $table->foreignIdFor(\App\Models\Location::class)->constrained('locations');
+            $table->dropColumn([
+                'consultation_fees',
+                'title',
+                'institution_name',
+                'birth_name',
+                'spouse_name',
+                'state',
+                'city',
+                'lat',
+                'lon','location_id','city_id','area_id','name','email','password','phoneno','gender']);
         });
     }
 

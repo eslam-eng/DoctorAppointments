@@ -24,7 +24,7 @@ use App\Models\Settlement;
 use App\Models\Subscription;
 use App\Models\Setting;
 use App\Models\Subscriber;
-use App\Models\Doctors;
+use App\Models\Doctor;
 use Stripe\Stripe;
 use Stripe\Charge;
 class MakePaymentController extends Controller
@@ -38,10 +38,10 @@ class MakePaymentController extends Controller
               $data = Subscriber::find($request->get('id'));
               $amount = $data->amount;
           }
-         
+
          Session::put("type",$request->get("type"));
          $arr = array();
-         $data1 = PaymentGatewayDetail::all();       
+         $data1 = PaymentGatewayDetail::all();
          foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
          }
@@ -57,7 +57,7 @@ class MakePaymentController extends Controller
          }
          return view("payment")->with("data",$data)->with("paymentdetail",$arr)->with("braintree_token",$token)->with("amount",$amount);
     }
-    
+
     public function show_braintree_payment(Request $request){
           if($request->get("type")==1){
               $data = BookAppointment::find($request->get('id'));
@@ -66,10 +66,10 @@ class MakePaymentController extends Controller
               $data = Subscriber::find($request->get('id'));
               $amount = $data->amount;
           }
-         
+
          Session::put("type",$request->get("type"));
          $arr = array();
-         $data1 = PaymentGatewayDetail::all();       
+         $data1 = PaymentGatewayDetail::all();
          foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
          }
@@ -85,7 +85,7 @@ class MakePaymentController extends Controller
          }
          return view("braintree")->with("data",$data)->with("paymentdetail",$arr)->with("braintree_token",$token)->with("amount",$amount);
     }
-    
+
     public function show_pay_razorpay(Request $request){
         if($request->get("type")==1){
               $data = BookAppointment::find($request->get('id'));
@@ -94,15 +94,15 @@ class MakePaymentController extends Controller
               $data = Subscriber::find($request->get('id'));
               $amount = $data->amount;
           }
-         
+
          Session::put("type",$request->get("type"));
          $arr = array();
-         $data1 = PaymentGatewayDetail::all();       
+         $data1 = PaymentGatewayDetail::all();
          foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
          }
          $token = "";
-        
+
          return view("razorpay")->with("data",$data)->with("paymentdetail",$arr)->with("amount",$amount);
     }
 
@@ -116,10 +116,10 @@ class MakePaymentController extends Controller
 
     public function save_braintree(Request $request){
        // dd($request->all());
-       
+
        $data1 = PaymentGatewayDetail::where("gateway_name","braintree")->get();
        if(count($data1)>0){
-             $arr = array(); 
+             $arr = array();
             foreach ($data1 as $k) {
                $arr[$k->gateway_name."_".$k->key] = $k->value;
             }
@@ -160,12 +160,12 @@ class MakePaymentController extends Controller
                                 $android=$this->send_notification_android($user->android_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 $ios=$this->send_notification_IOS($user->ios_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 try {
-                                        $user=Doctors::find($request->get("doctor_id")); 
+                                        $user=Doctor::find($request->get("doctor_id"));
                                         $user->msg=$msg;
                                         $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
                                             $message->to($user->email,$user->name)->subject(__('message.System Name'));
                                         });
-                                                          
+
                                 } catch (\Exception $e) {
                                 }
                             }
@@ -184,7 +184,7 @@ class MakePaymentController extends Controller
                   foreach($result->errors->deepAll() as $error) {
                       $errorString .= 'Error: ' . $error->code . ": " . $error->message . "\n";
                   }
-                 
+
                   return redirect()->route('payment-failed');
               }
        }else{
@@ -202,22 +202,22 @@ class MakePaymentController extends Controller
        }
        $data1 = PaymentGatewayDetail::where("gateway_name","razorpay")->get();
        if(count($data1)>0){
-         $arr = array(); 
+         $arr = array();
           foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
           }
          // echo "<pre>";print_r($arr);exit;
-         $input = $request->all();        
+         $input = $request->all();
            $api = new Api($arr['razorpay_razorpay_key'],$arr['razorpay_razorpay_secert']);
            $payment = $api->payment->fetch($request->get('razorpay_payment_id'));
-           
-           if($request->get('razorpay_payment_id')) 
+
+           if($request->get('razorpay_payment_id'))
            {
-               
-               try 
+
+               try
                {
-                   $response = $api->payment->fetch($request->get('razorpay_payment_id'))->capture(array('amount'=>(int)$amount*100)); 
-                   
+                   $response = $api->payment->fetch($request->get('razorpay_payment_id'))->capture(array('amount'=>(int)$amount*100));
+
                      if(Session::get("type")==1){
                                 $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
                                 $data->payment_mode="Razorpay";
@@ -236,12 +236,12 @@ class MakePaymentController extends Controller
                                 $android=$this->send_notification_android($user->android_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 $ios=$this->send_notification_IOS($user->ios_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 try {
-                                        $user=Doctors::find($request->get("doctor_id")); 
+                                        $user=Doctor::find($request->get("doctor_id"));
                                         $user->msg=$msg;
                                         $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
                                             $message->to($user->email,$user->name)->subject(__('message.System Name'));
                                         });
-                                                          
+
                                 } catch (\Exception $e) {
                                 }
                             }
@@ -253,25 +253,25 @@ class MakePaymentController extends Controller
                                 $data->save();
                             }
                             return redirect()->route('payment-success');
-                  
+
                }
-               catch (\Exception $e) 
+               catch (\Exception $e)
                {
-                  
+
                         $data->delete();
-                   
+
                         return redirect()->route('payment-failed');
-               }           
+               }
            }
        }else{
-           
+
             return redirect()->route('payment-failed');
        }
-      
+
    }
 
 
-    public function show_paystack_payment(Request $request){        
+    public function show_paystack_payment(Request $request){
         $data1 = PaymentGatewayDetail::where("gateway_name","paystack")->get();
         Session::put("type",$request->get("type"));
         if(Session::get("type")==1){
@@ -282,13 +282,13 @@ class MakePaymentController extends Controller
             $amount = $data->amount*100;
         }
        // echo $amount;exit;
-        $arr = array(); 
+        $arr = array();
           foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
           }
         $curl = curl_init();
           $email = 'admin@gmail.com';
-         // $amount = (int)$data->consultation_fees; 
+         // $amount = (int)$data->consultation_fees;
           $callback_url = route('paystackcallback');
           curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.paystack.co/transaction/initialize",
@@ -300,7 +300,7 @@ class MakePaymentController extends Controller
               'callback_url' => $callback_url
             ]),
             CURLOPT_HTTPHEADER => [
-              "authorization: Bearer ".$arr['paystack_secert_key']."", 
+              "authorization: Bearer ".$arr['paystack_secert_key']."",
               "content-type: application/json",
               "cache-control: no-cache"
             ],
@@ -310,34 +310,34 @@ class MakePaymentController extends Controller
           if($err){
             die('Curl returned error: ' . $err);
           }
-            $tranx = json_decode($response, true);   
+            $tranx = json_decode($response, true);
             //echo "<pre>";print_r($tranx);exit;
             if($tranx['data']['reference']){
                   if(Session::get("type")==1){
-                    $data->payment_mode="Paystack";           
+                    $data->payment_mode="Paystack";
                     $data->transaction_id=$tranx['data']['reference'];
                     $data->is_completed='0';
-                    $data->save();  
+                    $data->save();
                    }else{
-                        $data->payment_type="4"; 
+                        $data->payment_type="4";
                         $data->status ='2';
                         $data->transaction_id=$tranx['data']['reference'];
-                        $data->save();  
+                        $data->save();
                    }
             }else{
                 die('something getting worng');
             }
-           
+
              if(!$tranx['status']){
                print_r('API returned error: ' . $tranx['message']);
              }
              return Redirect($tranx['data']['authorization_url']);
     }
 
-    public function paystackcallback(Request $request){      
+    public function paystackcallback(Request $request){
       $data1 = PaymentGatewayDetail::where("gateway_name","paystack")->get();
-      
-      $arr = array(); 
+
+      $arr = array();
       foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
       }
@@ -351,7 +351,7 @@ class MakePaymentController extends Controller
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_HTTPHEADER => [
             "accept: application/json",
-            "authorization: Bearer ".$arr['paystack_secert_key']."", 
+            "authorization: Bearer ".$arr['paystack_secert_key']."",
             "cache-control: no-cache"
           ],
         ));
@@ -385,12 +385,12 @@ class MakePaymentController extends Controller
                                 $android=$this->send_notification_android($user->android_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 $ios=$this->send_notification_IOS($user->ios_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 try {
-                                        $user=Doctors::find($request->get("doctor_id")); 
-                                            
+                                        $user=Doctor::find($request->get("doctor_id"));
+
                                         $result=Mail::send('email.Ordermsg', ['user' => $user], function($message) use ($user){
                                             $message->to($user->email,$user->name)->subject(__('message.System Name'));
                                         });
-                                                          
+
                                 } catch (\Exception $e) {
                                 }
                             }
@@ -408,16 +408,16 @@ class MakePaymentController extends Controller
         }
     }
 
-    public function paystack_callback(Request $request){      
+    public function paystack_callback(Request $request){
       $data1 = PaymentGatewayDetail::where("gateway_name","paystack")->get();
-      
-      $arr = array(); 
+
+      $arr = array();
       foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
       }
       $curl = curl_init();
         $reference = $request->get("reference");
-        
+
         if(!$reference){
           die('No reference supplied');
         }
@@ -426,13 +426,13 @@ class MakePaymentController extends Controller
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_HTTPHEADER => [
             "accept: application/json",
-            "authorization: Bearer ".$arr['paystack_secert_key']."", 
+            "authorization: Bearer ".$arr['paystack_secert_key']."",
             "cache-control: no-cache"
           ],
         ));
         $response = curl_exec($curl);
         $err = curl_error($curl);
-      
+
         $tranx = json_decode($response);
         if(!$tranx->status){
          return redirect()->route('payment-failed');
@@ -456,20 +456,20 @@ class MakePaymentController extends Controller
                                 $user=User::find(1);
                                 $android=$this->send_notification_android($user->android_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
                                 $ios=$this->send_notification_IOS($user->ios_key,$msg,$request->get("doctor_id"),"doctor_id",$data->id);
-                                
-                            
+
+
             $doctor_id = $data->doctor_id;
-            Session::flash('message',__('message.Appointment Book Successfully')); 
+            Session::flash('message',__('message.Appointment Book Successfully'));
             Session::flash('alert-class', 'alert-success');
             return redirect('viewdoctor/'.$doctor_id);
         }else{ //fail
-            Session::flash('message',__('message.Something Wrong')); 
+            Session::flash('message',__('message.Something Wrong'));
             Session::flash('alert-class', 'alert-danger');
             return redirect()->back();
         }
     }
-    
-    public function show_stripe_payment(Request $request){    
+
+    public function show_stripe_payment(Request $request){
         $setting = Setting::find(1);
         Session::put("type",$request->get("type"));
         if(Session::get("type")==1){
@@ -479,46 +479,46 @@ class MakePaymentController extends Controller
         }
         return view('stripe',compact('data','setting'));
     }
-    
+
     public function stripe_callback(Request $request){
         Session::put("type",$request->get("type"));
         $id = $request->get("id");
-        
+
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
         $unique_id = uniqid();
-     
+
         $charge = \Stripe\Charge::create(array(
                'description' => "Amount: ".$request->get("consultation_fees").' - '. $unique_id,
-               'source' => $request->get("stripeToken"),                    
-               'amount' => (int)($request->get("consultation_fees") * 100), 
+               'source' => $request->get("stripeToken"),
+               'amount' => (int)($request->get("consultation_fees") * 100),
                'currency' => env('STRIPE_CURRENCY')
         ));
-       
-        
+
+
         if(Session::get("type")==1){
             $data1 = BookAppointment::find($id);
             $data1->transaction_id = $charge->id;
             $data1->payment_mode = $request->get("payment_type");
             $data1->is_completed = 1;
-            $data1->save();    
+            $data1->save();
         }else{
             $data1 = Subscriber::find($id);
             $data1->status='2';
             $data1->is_complet='1';
             $data1->transaction_id = $charge->id;
             $data1->payment_mode = "5";
-            $data1->save(); 
+            $data1->save();
         }
-          
+
         return redirect()->route('payment-success');
     }
-    
+
     public function show_rave_payment(Request $request){
        // dd($request->all());
         $reference = Flutterwave::generateReference();
         $data1 = PaymentGatewayDetail::where("gateway_name","rave")->get();
-          $arr = array(); 
-          
+          $arr = array();
+
           foreach ($data1 as $k) {
                 $arr[$k->gateway_name."_".$k->key] = $k->value;
           }
@@ -538,7 +538,7 @@ class MakePaymentController extends Controller
                             "phonenumber" => $userinfo->phone,
                             "name" => $userinfo->name
                         ],
-            
+
                         "customizations" => [
                             "title" => 'Book Appointment',
                             "description" => "Book Appointment"
@@ -546,7 +546,7 @@ class MakePaymentController extends Controller
             ];
         }else{
             $data = Subscriber::find($request->get('id'));
-            $userinfo = Doctors::find($data->doctor_id);
+            $userinfo = Doctor::find($data->doctor_id);
             $data = [
                         'payment_options' => 'card,banktransfer',
                         'amount' => $data->amount,
@@ -559,62 +559,62 @@ class MakePaymentController extends Controller
                             "phonenumber" => $userinfo->phone,
                             "name" => $userinfo->name
                         ],
-            
+
                         "customizations" => [
                             "title" => 'package',
                             "description" => "package"
                         ]
             ];
         }
-         
 
-        $payment = Flutterwave::initializePayment($data);  
+
+        $payment = Flutterwave::initializePayment($data);
         //echo "<pre>";print_r($payment);exit;
         if(Session::get("type")==1){
             $data = BookAppointment::find($request->get('id'));
             $data->transaction_id=$reference;
             $data->is_completed='0';
-            $data->save(); 
+            $data->save();
         }else{
             $data = Subscriber::find($request->get('id'));
             $data->transaction_id=$reference;
             $data->status='1';
-            $data->save(); 
+            $data->save();
         }
 
         if ($payment['status'] !== 'success') {
-            
+
             return redirect()->route('payment-failed');
         }
 
         return redirect($payment['data']['link']);
-        
+
     }
 
 
     public function rave_callback(Request $request){
         $transactionID = Flutterwave::getTransactionIDFromCallback();
         $data = Flutterwave::verifyTransaction($transactionID);
-       
+
         if(Session::get("type")==1){
               $data1 = BookAppointment::where("transaction_id",$data['data']['tx_ref'])->first();
               $data1->is_completed = 1;
                $data1->payment_mode = "Flutterwave";
-              $data1->save();    
+              $data1->save();
         }else{
             $data1 = Subscriber::where("transaction_id",$data['data']['tx_ref'])->first();
             $data1->status='2';
             $data1->is_complet='1';
              $data1->payment_mode = "Flutterwave";
-            $data1->save(); 
+            $data1->save();
         }
-          
+
         return redirect()->route('payment-success');
     }
 
     public function store_paytm_data(Request $request){
       $data1 = PaymentGatewayDetail::where("gateway_name","paytm")->get();
-      $arr = array(); 
+      $arr = array();
         Session::put("type",$request->get("type"));
       foreach ($data1 as $k) {
             $arr[$k->gateway_name."_".$k->key] = $k->value;
@@ -636,67 +636,67 @@ class MakePaymentController extends Controller
           'email' => 'redixbit.user10@gmail.com',
           'amount' => $amount,
           'callback_url' => route('paytmstatus')
-        ]);   
+        ]);
 
 
-        
+
         return $payment->receive();
     }
 
     public function paymentpaytmCallback(Request $request){
         $transaction = PaytmWallet::with('receive');
-        
+
         $response = $transaction->response();
-        
+
         $order_id = $transaction->getOrderId();
         $arr=explode("-",$order_id);
         $o_id=$arr[0];
         $type=$arr[1];
-        
-      
+
+
         if($transaction->isSuccessful()){
             if($type==1 || $type==3){
               $data1 = BookAppointment::find($o_id);
               $data1->is_completed = 1;
               $data1->transaction_id=$transaction->getTransactionId();
               $data1->save();
-               
+
             }else{
                     $data1 = Subscriber::find($o_id);
                     $data1->payment_type="Paytm";
                     $data1->transaction_id=$transaction->getTransactionId();
                     $data1->status='2';
                     $data1->save();
-                                
+
             }
             if($type==1 || $type==2){
                  return redirect()->route('payment-success');
              }
              else if($type==3){
-                    Session::flash('message',__('message.Appointment Book Successfully')); 
+                    Session::flash('message',__('message.Appointment Book Successfully'));
                     Session::flash('alert-class', 'alert-success');
                     return redirect()->back();
              }
-            
+
         }else {
              if($type==1 || $type==2){
                  return redirect()->route('payment-failed');
              }
              else if($type==3){
-                  Session::flash('message',"technical error please try again"); 
+                  Session::flash('message',"technical error please try again");
                     Session::flash('alert-class', 'alert-danger');
                     return redirect()->back();
              }
-            
+
         }
     }
-    
-    
+
+
     public function send_notification_android($key,$msg,$id,$field,$order_id){
         $getuser=TokenData::where("type",1)->where($field,$id)->get();
-        
+
         $i=0;
-        if(count($getuser)!=0){   
+        if(count($getuser)!=0){
 
                $reg_id = array();
                foreach($getuser as $gt){
@@ -704,7 +704,7 @@ class MakePaymentController extends Controller
                }
                $regIdChunk=array_chunk($reg_id,1000);
                foreach ($regIdChunk as $k) {
-                       $registrationIds =  $k;    
+                       $registrationIds =  $k;
                         $message = array(
                             'message' => $msg,
                             'title' =>  __('message.notification')
@@ -722,14 +722,14 @@ class MakePaymentController extends Controller
                           'data'              => $message1,
                           'notification'      =>$message1
                        );
-                       
+
                       // echo "<pre>";print_r($fields);exit;
                        $url = 'https://fcm.googleapis.com/fcm/send';
                        $headers = array(
                          'Authorization: key='.$key,// . $api_key,
                          'Content-Type: application/json'
                        );
-                      $json =  json_encode($fields);   
+                      $json =  json_encode($fields);
                       $ch = curl_init();
                       curl_setopt($ch, CURLOPT_URL, $url);
                       curl_setopt($ch, CURLOPT_POST, true);
@@ -737,11 +737,11 @@ class MakePaymentController extends Controller
                       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                       curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
-                      $result = curl_exec($ch);   
+                      $result = curl_exec($ch);
                       //echo "<pre>";print_r($result);exit;
                       if ($result === FALSE){
                          die('Curl failed: ' . curl_error($ch));
-                      }     
+                      }
                      curl_close($ch);
                      $response[]=json_decode($result,true);
                }
@@ -760,18 +760,18 @@ class MakePaymentController extends Controller
         }
         return 0;
      }
-     
+
     public function send_notification_IOS($key,$msg,$id,$field,$order_id){
       $getuser=TokenData::where("type",2)->where($field,$id)->get();
-         if(count($getuser)!=0){               
+         if(count($getuser)!=0){
                $reg_id = array();
                foreach($getuser as $gt){
                    $reg_id[]=$gt->token;
                }
-                
+
               $regIdChunk=array_chunk($reg_id,1000);
                foreach ($regIdChunk as $k) {
-                       $registrationIds =  $k;    
+                       $registrationIds =  $k;
                        $message = array(
                             'message' => $msg,
                             'title' =>  __('message.notification')
@@ -793,7 +793,7 @@ class MakePaymentController extends Controller
                          'Authorization: key='.$key,// . $api_key,
                          'Content-Type: application/json'
                        );
-                      $json =  json_encode($fields);   
+                      $json =  json_encode($fields);
                       $ch = curl_init();
                       curl_setopt($ch, CURLOPT_URL, $url);
                       curl_setopt($ch, CURLOPT_POST, true);
@@ -801,10 +801,10 @@ class MakePaymentController extends Controller
                       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                       curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
-                      $result = curl_exec($ch);   
+                      $result = curl_exec($ch);
                       if ($result === FALSE){
                          die('Curl failed: ' . curl_error($ch));
-                      }     
+                      }
                      curl_close($ch);
                      $response[]=json_decode($result,true);
                }

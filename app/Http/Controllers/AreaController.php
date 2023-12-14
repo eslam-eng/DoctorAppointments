@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Datatables\AreasDataTable;
+use App\Datatables\Location\AreasDataTable;
 use App\Http\Requests\Locations\Area\AreaRequest;
 use App\Models\Location;
 use App\Services\LocationsService;

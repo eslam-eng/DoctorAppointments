@@ -63,7 +63,7 @@ return array(
     'App\\Models\\DoctorAppointmentType' => $baseDir . '/app/Models/DoctorAppointmentType.php',
     'App\\Models\\DoctorBranch' => $baseDir . '/app/Models/DoctorBranch.php',
     'App\\Models\\Doctor_Hoilday' => $baseDir . '/app/Models/Doctor_Hoilday.php',
-    'App\\Models\\Doctors' => $baseDir . '/app/Models/Doctors.php',
+    'App\\Models\\Doctor' => $baseDir . '/app/Models/Doctors.php',
     'App\\Models\\FavoriteDoc' => $baseDir . '/app/Models/FavoriteDoc.php',
     'App\\Models\\Location' => $baseDir . '/app/Models/Location.php',
     'App\\Models\\Newsletter' => $baseDir . '/app/Models/Newsletter.php',

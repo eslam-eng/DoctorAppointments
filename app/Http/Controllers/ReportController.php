@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\carbon;
-use App\Models\Doctors;
+use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Subscriber;
 use App\Models\BookAppointment;
@@ -17,7 +17,7 @@ class ReportController extends Controller
 
     public function doctor_report(Request $request):Response
     {
-        $query = Doctors::query();
+        $query = Doctor::query();
         $data=$request->data_filter;
         $start_date=$request->start_date;
         $end_date=$request->end_date;

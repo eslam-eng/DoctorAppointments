@@ -109,6 +109,13 @@
                         <span>{{__("message.areas")}}</span>
                     </a>
                 </li>
+                <li class="menu-title">{{__("message.branches")}}</li>
+                <li>
+                    <a href="{{route('branches.index')}}" class="waves-effect">
+                        <i class="uil-home"></i>
+                        <span>{{__("message.branches")}}</span>
+                    </a>
+                </li>
 
                     <?php
                 }?>
