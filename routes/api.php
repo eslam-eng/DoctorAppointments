@@ -19,6 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['middleware' => 'auth:sanctum'],function (){
+    Route::apiResource('doctors',\App\Http\Controllers\API\DoctorController::class);
+
+});
 
 Route::any("doctors/search",[ApiController::class,"getAllDoctors"]);
 Route::any("doctors",[ApiController::class,"getAllDoctors"]);
