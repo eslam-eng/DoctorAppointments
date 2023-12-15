@@ -12,19 +12,14 @@ class DoctorsFilter extends QueryFilter
         parent::__construct($params);
     }
 
-    public function is_active($term)
+    public function status($term)
     {
-        return $this->builder->where('is_active',$term);
+        return $this->builder->where('status', $term);
     }
 
-    public function depth($term)
+    public function branch($term)
     {
-        return $this->builder->withDepth()->having('depth', $term);
-    }
-
-    public function parent($term)
-    {
-        return $this->builder->where('parent_id', $term);
+        return $this->builder->where('branch_id', $term);
     }
 
 }

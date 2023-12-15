@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\Branch;
 use App\Models\Location;
+use App\QueryFilters\BranchesFilter;
 use App\QueryFilters\LocationsFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class BranchesService extends BaseService
 {
@@ -17,18 +19,23 @@ class BranchesService extends BaseService
         $this->model = $model;
     }
 
-    public function getQuery(?array $filters = []): ?Builder
+    public function getModel(): Model
     {
-        return parent::getQuery($filters)
+        return $this->model;
+    }
+
+    public function getQuery(?array $filters = [],?array $relations = []): ?Builder
+    {
+        return parent::getQuery($filters)->with($relations)
             ->when(! empty($filters), function (Builder $builder) use ($filters) {
-                return $builder->filter(new LocationsFilter($filters));
+                return $builder->filter(new BranchesFilter($filters));
             });
     }
 
 
     public function datatable(array $filters = []): ?Builder
     {
-        return $this->getQuery($filters);
+        return $this->getQuery($filters)->with('city');
     }
 
     public function paginate(array $filters = []): \Illuminate\Contracts\Pagination\Paginator
@@ -37,29 +44,19 @@ class BranchesService extends BaseService
     }
 
 
-    public function getLocationAncestors($id)
-    {
-        return $this->model->defaultOrder()->ancestorsAndSelf($id);
-    }
-
-    public function getLocationDescendants($location_id)
-    {
-        return $this->model->defaultOrder()->descendantsOf($location_id) ;
-    }
-
-    public function create(array $data = [])
+    public function store(array $data = [])
     {
         return $this->getQuery()->create($data);
     }
 
-    public function update(Location $location , array $data = []): bool
+    public function update(Branch $branch , array $data = []): bool
     {
-        return $location->update($data);
+        return $branch->update($data);
     }
 
-    public function delete(Location $location): ?bool
+    public function delete(Branch $branch): ?bool
     {
-        return $location->delete();
+        return $branch->delete();
     }
 
 }

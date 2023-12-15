@@ -16,8 +16,12 @@ class CreateBranchesTable extends Migration
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignIdFor(\App\Models\Location::class)->constrained('locations');
+            $table->foreignIdFor(\App\Models\Location::class,'city_id')->constrained('locations');
+            $table->foreignIdFor(\App\Models\Location::class,'area_id')->constrained('locations');
             $table->tinyInteger('status')->default(1);
+            $table->string('phone')->nullable();
+            $table->string('map_url')->nullable();
+            $table->string('address')->nullable();
             $table->timestamps();
         });
     }

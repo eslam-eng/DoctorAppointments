@@ -262,6 +262,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('countries', CountryController::class);
         Route::resource('cities', CityController::class);
 
+        Route::resource('branches',\App\Http\Controllers\BranchController::class);
+
     });
 
 });

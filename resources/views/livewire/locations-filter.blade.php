@@ -1,7 +1,7 @@
 <div>
     <div class="row">
 
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-4 col-md-4">
             <div class="form-group">
                 <label for="exampleInputEmail1">@lang('message.select_country')</label>
                 <!-- Country Dropdown -->
@@ -14,7 +14,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-4 col-md-4">
             @isset($cities)
                 <div class="form-group">
                     <label for="exampleInputEmail1">@lang('message.select_city')</label>
@@ -23,6 +23,21 @@
                         <option value="0" disabled selected>Select City</option>
                         @foreach ($cities as $city)
                             <option value="{{ $city->id }}">{{ $city->title }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endisset
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            @if(isset($areas) && $show_areas)
+                <div class="form-group">
+                    <label for="exampleInputEmail1">@lang('message.select_area')</label>
+                    <!-- City Dropdown -->
+                    <select class="form-control" wire:model="selectedArea" name="{{$area_field_name}}">
+                        <option value="0" disabled selected>Select area</option>
+                        @foreach ($areas as $area)
+                            <option value="{{ $area->id }}">{{ $area->title }}</option>
                         @endforeach
                     </select>
                 </div>

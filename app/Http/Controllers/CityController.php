@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Datatables\CitiesDataTable;
+use App\Datatables\Location\CitiesDataTable;
 use App\Http\Requests\Locations\City\CityRequest;
 use App\Models\Location;
 use App\Services\LocationsService;
 use Illuminate\Http\Request;
+
 class CityController extends Controller
 {
    public function __construct(protected LocationsService $locationService)

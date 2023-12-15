@@ -5,11 +5,12 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DoctorsResource;
 use App\Models\About;
 use App\Models\Banner;
 use App\Models\BookAppointment;
 use App\Models\Doctor_Hoilday;
-use App\Models\Doctors;
+use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Privecy;
 use App\Models\Reportspam;
@@ -24,6 +25,7 @@ use App\Models\Subscriber;
 use App\Models\Subscription;
 use App\Models\TokenData;
 use App\Models\User;
+use App\Services\DoctorsService;
 use Carbon\Carbon;
 use DateInterval;
 use DateTime;
@@ -36,6 +38,10 @@ use Validator;
 
 class ApiController extends Controller
 {
+    public function __construct(public DoctorsService $doctorsService)
+    {
+    }
+
     public function change_password_doctor(Request $request)
     {
         $response = array("status" => "0", "register" => "Validation error");
@@ -61,7 +67,7 @@ class ApiController extends Controller
             $response['msg'] = $message;
         } else {
 
-            $data = Doctors::where('id', $request->get("doctor_id"))->first();
+            $data = Doctor::where('id', $request->get("doctor_id"))->first();
 
             if ($data) {
 
@@ -106,7 +112,7 @@ class ApiController extends Controller
             $response['msg'] = $message;
         } else {
 
-            $data = Doctors::where('id', $request->get("doctor_id"))->first();
+            $data = Doctor::where('id', $request->get("doctor_id"))->first();
 
             if ($data) {
 
@@ -150,7 +156,7 @@ class ApiController extends Controller
 
     public function get_all_doctor(Request $request)
     {
-        $data = Doctors::take(27);
+        $data = Doctor::take(27);
         if ($request->has('start_price') && $request->has('end_price'))
             $data->whereBetween('consultation_fees', [$request->start_price, $request->end_price]);
         $data = $data->get();
@@ -161,7 +167,7 @@ class ApiController extends Controller
         return json_encode(array("services" => $services, "data" => $data));
     }
 
-    public function showsearchdoctor(Request $request)
+    public function searchdoctors(Request $request)
     {
         $response = array("status" => "0", "register" => "Validation error");
         $rules = [
@@ -179,7 +185,7 @@ class ApiController extends Controller
             }
             $response['msg'] = $message;
         } else {
-            $data = Doctors::Where('name', 'like', '%' . $request->get("term") . '%')->select("id", "name", "address", "image", "department_id")->paginate(10);
+            $data = Doctor::Where('name', 'like', '%' . $request->get("term") . '%')->select("id", "name", "address", "image", "department_id")->paginate(10);
             if ($data) {
 
                 foreach ($data as $k) {
@@ -201,58 +207,11 @@ class ApiController extends Controller
 
     }
 
-    public function nearbydoctor(Request $request)
+    public function getAllDoctors(Request $request)
     {
-        $response = array("status" => "0", "register" => "Validation error");
-        $rules = [
-            'lat' => 'required',
-            'lon' => 'required'
-        ];
-        $messages = array(
-            'lat.required' => "lat is required",
-            'lon.required' => 'lon is requied'
-        );
-        $validator = Validator::make($request->all(), $rules, $messages);
-        if ($validator->fails()) {
-            $message = '';
-            $messages_l = json_decode(json_encode($validator->messages()), true);
-            foreach ($messages_l as $msg) {
-                $message .= $msg[0] . ", ";
-            }
-            $response['msg'] = $message;
-        } else {
-            $lat = $request->get("lat");
-            $lon = $request->get("lon");
-
-            $data = DB::table("doctors")
-                ->select("doctors.id", "doctors.name", "doctors.address", "doctors.department_id", "doctors.image", 'doctors.consultation_fees'
-                    , DB::raw("6371 * acos(cos(radians(" . $lat . "))
-                              * cos(radians(doctors.lat))
-                              * cos(radians(doctors.lon) - radians(" . $lon . "))
-                              + sin(radians(" . $lat . "))
-                              * sin(radians(doctors.lat))) AS distance"))
-                ->orderby('distance')->WhereNotNull("doctors.lat");
-
-            if ($request->has('start_price') && $request->has('end_price'))
-                $data->whereBetween('doctors.consultation_fees', [$request->start_price, $request->end_price]);
-
-            $data = $data->paginate(10);
-            if ($data) {
-
-                foreach ($data as $k) {
-                    $department = Services::find($k->department_id);
-                    $k->department_name = isset($department) ? $department->name : "";
-                    $k->image = asset("public/upload/doctors") . '/' . $k->image;
-                    unset($k->department_id);
-                }
-                $response = array("status" => 1, "msg" => "Search Result", "data" => $data);
-            } else {
-                $response = array("status" => 0, "msg" => "No Result Found");
-            }
-
-        }
-        return json_encode($response, JSON_NUMERIC_CHECK);
-
+        $filters = $request->all();
+        $relations = ['departmentls'];
+        return DoctorsResource::collection($this->doctorsService->paginate(filters: $filters,relations: $relations));
     }
 
     public function postregisterpatient(Request $request)
@@ -363,11 +322,6 @@ class ApiController extends Controller
         return json_encode($response, JSON_NUMERIC_CHECK);
     }
 
-    public function getalldoctors()
-    {
-        $data = Doctors::take(26)->get();
-        return Response::json($data);
-    }
 
     public function showlogin(Request $request)
     {
@@ -589,13 +543,13 @@ class ApiController extends Controller
             }
             $response['register'] = $message;
         } else {
-            $getuser = Doctors::where("email", $request->get("email"))->first();
+            $getuser = Doctor::where("email", $request->get("email"))->first();
             if (empty($getuser)) {//update token
                 $login_field = "";
                 $user_id = "";
                 $connectycube_password = "";
 
-                $inset = new Doctors();
+                $inset = new Doctor();
                 $inset->phoneno = $request->get("phone");
                 $inset->name = $request->get("name");
                 $inset->password = $request->get("password");
@@ -659,7 +613,7 @@ class ApiController extends Controller
             }
             $response['register'] = $message;
         } else {
-            $getuser = Doctors::where("email", $request->get("email"))->where("password", $request->get("password"))->first();
+            $getuser = Doctor::where("email", $request->get("email"))->where("password", $request->get("password"))->first();
 
             if ($getuser) {//update token
                 $store = TokenData::where("token", $request->get("token"))->first();
@@ -676,7 +630,7 @@ class ApiController extends Controller
                 $response['register'] = array("doctor_id" => $getuser->id, "name" => $getuser->name, "phone" => $getuser->phone, "email" => $getuser->email, "login_id" => $getuser->login_id, "connectycube_user_id" => $getuser->connectycube_user_id, "profile_pic" => $image, "connectycube_password" => $getuser->connectycube_password);
 
             } else {//in vaild user
-                $data = Doctors::where("email", $request->get("email"))->first();
+                $data = Doctor::where("email", $request->get("email"))->first();
                 if ($data) {
                     $response['success'] = "0";
                     $response['register'] = "Invaild Password";
@@ -697,7 +651,7 @@ class ApiController extends Controller
         $data = Services::select('id', 'name', 'icon')->get();
         if (count($data) > 0) {
             foreach ($data as $d) {
-                $d->total_doctors = count(Doctors::where("department_id", $d->id)->get());
+                $d->total_doctors = count(Doctor::where("department_id", $d->id)->get());
                 $d->icon = asset("public/upload/services") . '/' . $d->icon;
             }
             $response['success'] = "1";
@@ -797,7 +751,7 @@ class ApiController extends Controller
                             $android = $this->send_notification_android($user->android_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
                             $ios = $this->send_notification_IOS($user->ios_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
                             try {
-                                $user = Doctors::find($request->get("doctor_id"));
+                                $user = Doctor::find($request->get("doctor_id"));
                                 $user->msg = $msg;
 
                                 $result = Mail::send('email.Ordermsg', ['user' => $user], function ($message) use ($user) {
@@ -849,7 +803,7 @@ class ApiController extends Controller
             }
             $response['register'] = $message;
         } else {
-            $getdetail = Doctors::find($request->get("doctor_id"));
+            $getdetail = Doctor::find($request->get("doctor_id"));
             if (empty($getdetail)) {
                 $response['success'] = "0";
                 $response['register'] = "Doctor Not Found";
@@ -1075,7 +1029,7 @@ class ApiController extends Controller
                 foreach ($data as $d) {
                     $a = array();
 
-                    $doctors = Doctors::find($d->doctor_id);
+                    $doctors = Doctor::find($d->doctor_id);
                     $department = Services::find($doctors->department_id);
                     if ($doctors) {
                         $d->name = $doctors->name;
@@ -1147,7 +1101,7 @@ class ApiController extends Controller
                 foreach ($data as $d) {
                     $a = array();
 
-                    $doctors = Doctors::find($d->doctor_id);
+                    $doctors = Doctor::find($d->doctor_id);
                     $department = Services::find($doctors->department_id);
                     if ($doctors) {
                         $d->name = $doctors->name;
@@ -1371,7 +1325,7 @@ class ApiController extends Controller
             }
             $response['register'] = $message;
         } else {
-            $data = Doctors::where('id', $request->get("doctor_id"))->orderBy('id', 'desc')->first();
+            $data = Doctor::where('id', $request->get("doctor_id"))->orderBy('id', 'desc')->first();
             // echo "<pre>";
             // print_r($data);
             // die();
@@ -1785,7 +1739,7 @@ class ApiController extends Controller
         } else {
 
 
-            $store = Doctors::find($request->get("doctor_id"));
+            $store = Doctor::find($request->get("doctor_id"));
             if ($store) {
                 DB::beginTransaction();
                 try {
@@ -1911,7 +1865,7 @@ class ApiController extends Controller
             }
             $response['register'] = $message;
         } else {
-            $data = Doctors::find($request->get("doctor_id"));
+            $data = Doctor::find($request->get("doctor_id"));
 
             if (empty($data)) {
                 $response['success'] = "0";
@@ -2327,7 +2281,7 @@ class ApiController extends Controller
             if ($request->get("type") == 1) { //patient
                 $checkmobile = Patient::where("email", $request->get("email"))->first();
             } else { // doctor
-                $checkmobile = Doctors::where("email", $request->get("email"))->first();
+                $checkmobile = Doctor::where("email", $request->get("email"))->first();
             }
             if ($checkmobile) {
                 $code = mt_rand(100000, 999999);
