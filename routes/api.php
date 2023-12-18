@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\BranchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ApiController;
@@ -24,8 +25,8 @@ Route::group(['middleware' => 'auth:sanctum'],function (){
 
 });
 
-Route::any("doctors/search",[ApiController::class,"getAllDoctors"]);
-Route::any("doctors",[ApiController::class,"getAllDoctors"]);
+Route::any("searchdoctor",[ApiController::class,"showsearchdoctor"]);
+Route::any("nearbydoctor",[ApiController::class,"nearbydoctor"]);
 Route::any("register",[ApiController::class,"postregisterpatient"]);
 Route::any("registernew",[ApiController::class,"postregisterpatient"]);
 Route::any("user_reject_appointment",[ApiController::class,"user_reject_appointment"]);
@@ -80,4 +81,6 @@ Route::any("income_report",[ApiController::class,"income_report"]);
 Route::any("data_list",[ApiController::class,"data_list"]);
 Route::any("about",[ApiController::class,"about"]);
 Route::any("privecy",[ApiController::class,"privecy"]);
+
+Route::get('branches', BranchController::class);
 

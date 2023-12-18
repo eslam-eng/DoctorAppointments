@@ -38,9 +38,14 @@ class BranchesService extends BaseService
         return $this->getQuery($filters)->with('city');
     }
 
+    public function all($filters): array|\Illuminate\Database\Eloquent\Collection
+    {
+        return $this->getQuery($filters)->get();
+    }
+
     public function paginate(array $filters = []): \Illuminate\Contracts\Pagination\Paginator
     {
-        return $this->getQuery($filters)->simplePaginate();
+        return $this->getQuery($filters)->simplePaginate(perPage: 10);
     }
 
 

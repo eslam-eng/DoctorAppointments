@@ -22,4 +22,13 @@ class DoctorsFilter extends QueryFilter
         return $this->builder->where('branch_id', $term);
     }
 
+    public function price($term)
+    {
+        return $this->builder->where(function ($query) use($term){
+            $query->where('consultation_fees','<=',$term)
+                ->orWhere('chat_fees','<=',$term)
+                ->orWhere('call_fees','<=','term');
+        });
+    }
+
 }

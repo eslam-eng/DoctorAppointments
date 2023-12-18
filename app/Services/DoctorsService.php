@@ -31,9 +31,9 @@ class DoctorsService extends BaseService
         return $this->getQuery($filters,$relations);
     }
 
-    public function paginate(array $filters = [],?array $relations = []): \Illuminate\Contracts\Pagination\Paginator
+    public function paginate(array $filters = [],?array $relations = [], ?array $columns =['*']): \Illuminate\Contracts\Pagination\Paginator
     {
-        return $this->getQuery($filters,$relations)->simplePaginate();
+        return $this->getQuery($filters,$relations)->select($columns)->paginate(10);
     }
 
 

@@ -16,6 +16,8 @@ class AddColumnToDoctorsTable extends Migration
         Schema::table('doctors', function (Blueprint $table) {
             $table->foreignIdFor(\App\Models\Branch::class)->nullable()->constrained('branches')->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\Location::class,'location_id')->nullable()->constrained('locations')->nullOnDelete();
+            $table->float('call_fees');
+            $table->float('chat_fees');
         });
     }
 

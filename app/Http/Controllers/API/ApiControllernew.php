@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 error_reporting(-1);
 ini_set('display_errors', 'On');
+
+use App\Services\DoctorsService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Auth;
@@ -35,6 +37,9 @@ use DateInterval;
 class ApiControllernew extends Controller
 {
 
+    public function __construct(public DoctorsService $doctorsService)
+    {
+    }
   public function showsearchdoctor(Request $request){
         $response = array("status" => "0", "register" => "Validation error");
            $rules = [
@@ -75,51 +80,20 @@ class ApiControllernew extends Controller
    }
 
    public function nearbydoctor(Request $request){
-       $response = array("status" => "0", "register" => "Validation error");
-           $rules = [
-                      'lat' => 'required',
-                      'lon'=>'required'
-                    ];
-            $messages = array(
-                      'lat.required' => "lat is required",
-                      'lon.required'=>'lon is requied'
-            );
-            $validator = Validator::make($request->all(), $rules, $messages);
-            if ($validator->fails()) {
-                  $message = '';
-                  $messages_l = json_decode(json_encode($validator->messages()), true);
-                  foreach ($messages_l as $msg) {
-                         $message .= $msg[0] . ", ";
-                  }
-                  $response['msg'] = $message;
-            } else {
-                      $lat = $request->get("lat");
-                      $lon =  $request->get("lon");
-
-                      $data=DB::table("doctors")
-                          ->select("doctors.id","doctors.name","doctors.address","doctors.department_id","doctors.image"
-                              ,DB::raw("6371 * acos(cos(radians(" . $lat . "))
-                              * cos(radians(doctors.lat))
-                              * cos(radians(doctors.lon) - radians(" . $lon . "))
-                              + sin(radians(" .$lat. "))
-                              * sin(radians(doctors.lat))) AS distance"))
-                              ->orderby('distance')->WhereNotNull("doctors.lat")->paginate(10);
-
-                     if($data){
-
-                         foreach ($data as $k) {
-                             $department=Services::find($k->department_id);
-                             $k->department_name=isset($department)?$department->name:"";
-                             $k->image=asset("public/upload/doctors").'/'.$k->image;
-                             unset($k->department_id);
-                         }
-                        $response = array("status" =>1, "msg" => "Search Result","data"=>$data);
-                     }else{
-                        $response = array("status" =>0, "msg" => "No Result Found");
-                     }
-
+       $filters = $request->all();
+       $doctors = $this->doctorsService->paginate(filters: $filters,columns: ["doctors.id", "doctors.name", "doctors.address", "doctors.department_id", "doctors.image", 'doctors.consultation_fees']);
+       if ($doctors) {
+           foreach ($doctors as $doctor) {
+               $department = Services::find($doctor->department_id);
+               $doctor->department_name = isset($department) ? $department->name : "";
+               $doctor->image = asset("public/upload/doctors") . '/' . $doctor->image;
+               unset($doctor->department_id);
            }
-           return json_encode($response, JSON_NUMERIC_CHECK);
+           $response = array("status" => 1, "msg" => "Search Result", "data" => $doctors);
+       } else {
+           $response = array("status" => 0, "msg" => "No Result Found");
+       }
+       return json_encode($response, JSON_NUMERIC_CHECK);
 
    }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
+use App\Enum\AppointmentTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DoctorsResource;
 use App\Models\About;
@@ -31,6 +32,7 @@ use DateInterval;
 use DateTime;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Mail;
 use Response;
 use validate;
@@ -207,12 +209,63 @@ class ApiController extends Controller
 
     }
 
-    public function getAllDoctors(Request $request)
+    public function nearbydoctor(Request $request)
     {
         $filters = $request->all();
-        $relations = ['departmentls'];
-        return DoctorsResource::collection($this->doctorsService->paginate(filters: $filters,relations: $relations));
+        $doctors = $this->doctorsService->paginate(filters: $filters,columns: ["doctors.id", "doctors.name", "doctors.address", "doctors.department_id", "doctors.image", 'doctors.consultation_fees']);
+        if ($doctors) {
+            foreach ($doctors as $doctor) {
+                $department = Services::find($doctor->department_id);
+                $doctor->department_name = isset($department) ? $department->name : "";
+                $doctor->image = asset("public/upload/doctors") . '/' . $doctor->image;
+                unset($doctor->department_id);
+            }
+            $response = array("status" => 1, "msg" => "Search Result", "data" => $doctors);
+        } else {
+            $response = array("status" => 0, "msg" => "No Result Found");
+        }
+        return json_encode($response, JSON_NUMERIC_CHECK);
     }
+
+    public function showsearchdoctor(Request $request){
+        $response = array("status" => "0", "register" => "Validation error");
+        $rules = [
+            'term' => 'required'
+        ];
+        $messages = array(
+            'term.required' => "term is required"
+        );
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            $message = '';
+            $messages_l = json_decode(json_encode($validator->messages()), true);
+            foreach ($messages_l as $msg) {
+                $message .= $msg[0] . ", ";
+            }
+            $response['msg'] = $message;
+        } else {
+            $data=Doctor::Where('name', 'like', '%' . $request->get("term") . '%')->select("id","name","address","image","department_id")->paginate(10);
+            if($data){
+
+                foreach ($data as $k) {
+                    $dr=Services::find($k->department_id);
+                    if($dr){
+                        $k->department_name=$dr->name;
+                    }else{
+                        $k->department_name="";
+                    }
+                    $k->image=asset('public/upload/doctors').'/'.$k->image;
+                    unset($data->department_id);
+                }
+                $response = array("status" =>1, "msg" => "Search Result","data"=>$data);
+            }else{
+                $response = array("status" =>0, "msg" => "No Result Found");
+            }
+        }
+        return json_encode($response, JSON_NUMERIC_CHECK);
+
+    }
+
 
     public function postregisterpatient(Request $request)
     {
@@ -678,7 +731,7 @@ class ApiController extends Controller
             'phone' => 'required',
             'user_description' => 'required',
             'payment_type' => 'required',
-            'consultation_fees' => 'required'
+            'appointment_typ' => ['required',Rule::in(AppointmentTypeEnum::values())],
         ];
         $messages = array(
             'user_id.required' => "user_id is required",
@@ -689,7 +742,7 @@ class ApiController extends Controller
             'phone.required' => "phone is required",
             'user_description.required' => "user_description is required",
             'payment_method_nonce.required' => "payment_method_nonce is required",
-            'consultation_fees.requierd' => "consultation_fees is required",
+            'appointment_typ.required' => "please define Appointment is required",
             "payment_type.required" => "Payment Type is Required",
             "stripeToken.required" => "stripeToken is required"
         );
@@ -714,6 +767,12 @@ class ApiController extends Controller
                     DB::beginTransaction();
                     try {
                         $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
+                        $doctor = Doctor::find($request->get("doctor_id"));
+                        if (!isset($doctor)){
+                            $response['success'] = "3";
+                            $response['register'] = "Doctor not found";
+                            return json_encode($response, JSON_NUMERIC_CHECK);
+                        }
                         $data = new BookAppointment();
                         $data->user_id = $request->get("user_id");
                         $data->doctor_id = $request->get("doctor_id");
@@ -722,6 +781,7 @@ class ApiController extends Controller
                         $data->date = $request->get("date");
                         $data->phone = $request->get("phone");
                         $data->user_description = $request->get("user_description");
+                        $data->appointment_type = $request->get("appointment_type");
                         if ($request->get("payment_type") == "COD") {
                             $data->payment_mode = "COD";
                             $data->is_completed = "1";
@@ -731,7 +791,8 @@ class ApiController extends Controller
                             $data->is_completed = "0";
 
                         }
-                        $data->consultation_fees = $request->get("consultation_fees");
+                        $data->appointment_fees = $this->getAppointmentFees(appointment_type: $data->appointment_type,doctor: $doctor);
+
                         $data->save();
                         if ($request->get("payment_type") == "COD") {
                             $url = "";
@@ -751,7 +812,7 @@ class ApiController extends Controller
                             $android = $this->send_notification_android($user->android_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
                             $ios = $this->send_notification_IOS($user->ios_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
                             try {
-                                $user = Doctor::find($request->get("doctor_id"));
+                                $user = $doctor;
                                 $user->msg = $msg;
 
                                 $result = Mail::send('email.Ordermsg', ['user' => $user], function ($message) use ($user) {
@@ -759,6 +820,7 @@ class ApiController extends Controller
                                 });
 
                             } catch (\Exception $e) {
+                                logger($e);
                             }
                         }
                         $response['success'] = "1";
@@ -780,6 +842,15 @@ class ApiController extends Controller
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
 
+    }
+
+    private function getAppointmentFees($appointment_type,Doctor $doctor)
+    {
+        return match ($appointment_type){
+            AppointmentTypeEnum::CALLFEES->value =>$doctor->call_fees,
+            AppointmentTypeEnum::CHATFEES->value => $doctor->chat_fees,
+            AppointmentTypeEnum::CONSULTATIONFESS->value => $doctor->consultation_fees
+        };
     }
 
     public function viewdoctor(Request $request)
@@ -1706,7 +1777,10 @@ class ApiController extends Controller
             "department_id" => "required",
             "facebook_url" => "required",
             "twitter_url" => "required",
-            "consultation_fees" => "required"
+            "call_fees" => "required",
+            "consultation_fees" => "required",
+            "chat_fees" => "required",
+            "branch_id" => "required|integer",
             //"time_json"=>"required"
         ];
 
@@ -1725,7 +1799,9 @@ class ApiController extends Controller
             'department_id.required' => "department_id is required",
             'facebook_url.required' => "facebook_url is required",
             'twitter_url.required' => "twitter_url is required",
-            'consultation_fees.required' => "consultation_fees is required"
+            'consultation_fees.required' => "consultation fees is required",
+            'call_fees.required' => "call fees is required",
+            'chat_fees.required' => "chat fees is required"
             //'time_json.required' => "time_json is required"
         );
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -1779,6 +1855,9 @@ class ApiController extends Controller
                     $store->email = $request->get("email");
                     $store->working_time = $request->get("working_time");
                     $store->consultation_fees = $request->get("consultation_fees");
+                    $store->call_fees = $request->get("call_fees");
+                    $store->chat_fees = $request->get("chat_fees");
+                    $store->branch_id = $request->get("branch_id");
                     $store->image = $img_url;
                     $store->save();
                     if ($request->get("time_json") != "") {

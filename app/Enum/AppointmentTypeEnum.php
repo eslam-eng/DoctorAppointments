@@ -2,9 +2,14 @@
 
 namespace App\Enum;
 
-enum AppointmentTypeEnum: int
+enum AppointmentTypeEnum: string
 {
-    case CONSULTATION = 1;
-    case CHAT = 2;
-    case CALL = 3;
+    case CALLFEES = 'call_fees';
+    case CONSULTATIONFESS = 'consultation_fees';
+    case CHATFEES = 'chat_fees';
+
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
 }

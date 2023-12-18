@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
 {
+    use Filterable;
     protected $guarded = [];
     protected $table = 'doctors';
     protected $primaryKey = 'id';
@@ -19,5 +21,10 @@ class Doctor extends Model
      public function branch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
      {
          return $this->belongsTo(Branch::class,'branch_id');
+     }
+
+     public function getImagePathAttribute(): string
+     {
+         return asset("public/upload/doctors") . '/' . $this->image;
      }
 }

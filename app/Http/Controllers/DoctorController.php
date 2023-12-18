@@ -236,6 +236,9 @@ class DoctorController extends Controller
             $store->email = $request->get("email");
             $store->working_time = $request->get("working_time");
             $store->branch_id = $request->get('branch_id');
+            $store->call_fees = $request->get('call_fees');
+            $store->consultation_fees = $request->get('consultation_fees');
+            $store->chat_fees = $request->get('chat_fees');
             $store->image = $img_url;
             $store->is_approve = '1';
             $user_id = "";
@@ -246,16 +249,7 @@ class DoctorController extends Controller
             }
             $store->connectycube_user_id = $user_id;
             $store->login_id = $login_field;
-            $doctor = $store->save();
-
-            if ($doctor) {
-                $doctorAppointmentData = [
-                    ['doctor_id' => $store->id, 'appointment_type' => AppointmentTypeEnum::CONSULTATION->value, 'price' => $request->get('consultation_fees'),'created_at'=>now(),'updated_at'=>now()],
-                    ['doctor_id' => $store->id, 'appointment_type' => AppointmentTypeEnum::CALL->value, 'price' => $request->get('call_fees'),'created_at'=>now(),'updated_at'=>now()],
-                    ['doctor_id' => $store->id, 'appointment_type' => AppointmentTypeEnum::CHAT->value, 'price' => $request->get('chat_fees'),'created_at'=>now(),'updated_at'=>now()],
-                ];
-                DoctorAppointmentType::query()->insert($doctorAppointmentData);
-            }
+            $store->save();
             Session::flash('message', $msg);
             Session::flash('alert-class', 'alert-success');
             \Illuminate\Support\Facades\DB::commit();
