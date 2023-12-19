@@ -6,12 +6,11 @@ ini_set('display_errors', 'On');
 
 use App\Enum\AppointmentTypeEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\DoctorsResource;
 use App\Models\About;
 use App\Models\Banner;
 use App\Models\BookAppointment;
-use App\Models\Doctor_Hoilday;
 use App\Models\Doctor;
+use App\Models\Doctor_Hoilday;
 use App\Models\Patient;
 use App\Models\Privecy;
 use App\Models\Reportspam;
@@ -212,7 +211,7 @@ class ApiController extends Controller
     public function nearbydoctor(Request $request)
     {
         $filters = $request->all();
-        $doctors = $this->doctorsService->paginate(filters: $filters,columns: ["doctors.id", "doctors.name", "doctors.address", "doctors.department_id", "doctors.image", 'doctors.consultation_fees']);
+        $doctors = $this->doctorsService->paginate(filters: $filters, columns: ["doctors.id", "doctors.name", "doctors.address", "doctors.department_id", "doctors.image", 'doctors.consultation_fees']);
         if ($doctors) {
             foreach ($doctors as $doctor) {
                 $department = Services::find($doctor->department_id);
@@ -227,7 +226,8 @@ class ApiController extends Controller
         return json_encode($response, JSON_NUMERIC_CHECK);
     }
 
-    public function showsearchdoctor(Request $request){
+    public function showsearchdoctor(Request $request)
+    {
         $response = array("status" => "0", "register" => "Validation error");
         $rules = [
             'term' => 'required'
@@ -244,22 +244,22 @@ class ApiController extends Controller
             }
             $response['msg'] = $message;
         } else {
-            $data=Doctor::Where('name', 'like', '%' . $request->get("term") . '%')->select("id","name","address","image","department_id")->paginate(10);
-            if($data){
+            $data = Doctor::Where('name', 'like', '%' . $request->get("term") . '%')->select("id", "name", "address", "image", "department_id")->paginate(10);
+            if ($data) {
 
                 foreach ($data as $k) {
-                    $dr=Services::find($k->department_id);
-                    if($dr){
-                        $k->department_name=$dr->name;
-                    }else{
-                        $k->department_name="";
+                    $dr = Services::find($k->department_id);
+                    if ($dr) {
+                        $k->department_name = $dr->name;
+                    } else {
+                        $k->department_name = "";
                     }
-                    $k->image=asset('public/upload/doctors').'/'.$k->image;
+                    $k->image = asset('public/upload/doctors') . '/' . $k->image;
                     unset($data->department_id);
                 }
-                $response = array("status" =>1, "msg" => "Search Result","data"=>$data);
-            }else{
-                $response = array("status" =>0, "msg" => "No Result Found");
+                $response = array("status" => 1, "msg" => "Search Result", "data" => $data);
+            } else {
+                $response = array("status" => 0, "msg" => "No Result Found");
             }
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
@@ -575,13 +575,13 @@ class ApiController extends Controller
             'password' => 'required',
             'email' => 'required',
             'name' => 'required',
-            // 'token' =>'required'
+            'branch_id' => 'required|exists:branches,id'
         ];
 
         $messages = array(
             'phone.required' => "Mobile No is required",
             'password.required' => "password is required",
-            //   'token.required' => "token is required",
+            'branch_id.required' => "branch is required",
             'email.required' => 'Email is required',
             'name.required' => 'name is required'
         );
@@ -607,6 +607,7 @@ class ApiController extends Controller
                 $inset->name = $request->get("name");
                 $inset->password = $request->get("password");
                 $inset->email = $request->get("email");
+                $inset->branch_id = $request->get("branch_id");
 
 
                 if (env('ConnectyCube') == true) {
@@ -731,7 +732,7 @@ class ApiController extends Controller
             'phone' => 'required',
             'user_description' => 'required',
             'payment_type' => 'required',
-            'appointment_typ' => ['required',Rule::in(AppointmentTypeEnum::values())],
+            'appointment_type' => ['required', Rule::in(AppointmentTypeEnum::values())],
         ];
         $messages = array(
             'user_id.required' => "user_id is required",
@@ -742,7 +743,7 @@ class ApiController extends Controller
             'phone.required' => "phone is required",
             'user_description.required' => "user_description is required",
             'payment_method_nonce.required' => "payment_method_nonce is required",
-            'appointment_typ.required' => "please define Appointment is required",
+            'appointment_type.required' => "please choose Appointment is required",
             "payment_type.required" => "Payment Type is Required",
             "stripeToken.required" => "stripeToken is required"
         );
@@ -768,7 +769,7 @@ class ApiController extends Controller
                     try {
                         $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
                         $doctor = Doctor::find($request->get("doctor_id"));
-                        if (!isset($doctor)){
+                        if (!isset($doctor)) {
                             $response['success'] = "3";
                             $response['register'] = "Doctor not found";
                             return json_encode($response, JSON_NUMERIC_CHECK);
@@ -791,7 +792,7 @@ class ApiController extends Controller
                             $data->is_completed = "0";
 
                         }
-                        $data->appointment_fees = $this->getAppointmentFees(appointment_type: $data->appointment_type,doctor: $doctor);
+                        $data->appointment_fees = $this->getAppointmentFees(appointment_type: $data->appointment_type, doctor: $doctor);
 
                         $data->save();
                         if ($request->get("payment_type") == "COD") {
@@ -844,10 +845,10 @@ class ApiController extends Controller
 
     }
 
-    private function getAppointmentFees($appointment_type,Doctor $doctor)
+    private function getAppointmentFees($appointment_type, Doctor $doctor)
     {
-        return match ($appointment_type){
-            AppointmentTypeEnum::CALLFEES->value =>$doctor->call_fees,
+        return match ($appointment_type) {
+            AppointmentTypeEnum::CALLFEES->value => $doctor->call_fees,
             AppointmentTypeEnum::CHATFEES->value => $doctor->chat_fees,
             AppointmentTypeEnum::CONSULTATIONFESS->value => $doctor->consultation_fees
         };
@@ -874,7 +875,7 @@ class ApiController extends Controller
             }
             $response['register'] = $message;
         } else {
-            $getdetail = Doctor::find($request->get("doctor_id"));
+            $getdetail = Doctor::query()->with(['branch.city','branch.area'])->find($request->get("doctor_id"));
             if (empty($getdetail)) {
                 $response['success'] = "0";
                 $response['register'] = "Doctor Not Found";

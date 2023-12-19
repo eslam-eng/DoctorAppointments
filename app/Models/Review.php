@@ -13,7 +13,7 @@ class Review extends Model
      	return $this->hasone("App\Models\Patient",'id','user_id');
     }
     public function doctorls(){
-     	return $this->hasone("App\Models\Doctors",'id','doc_id');
+     	return $this->hasone("App\Models\Doctor",'id','doc_id');
     }
 }
 ?>

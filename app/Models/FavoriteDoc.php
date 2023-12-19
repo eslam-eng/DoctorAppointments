@@ -10,7 +10,7 @@ class FavoriteDoc extends Model
     protected $primaryKey = 'id';
 
      public function doctorls(){
-     	return $this->hasone("App\Models\Doctors",'id','doctor_id');
+     	return $this->hasone("App\Models\Doctor",'id','doctor_id');
      }
 }
 ?>

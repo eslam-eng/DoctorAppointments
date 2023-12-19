@@ -9,9 +9,9 @@ class Subscriber extends Model
     protected $table = 'subscriber';
     protected $primaryKey = 'id';
 
-        
+
     public function Doctors(){
-        return $this->hasone("App\Models\Doctors",'id','doctor_id');
+        return $this->hasone("App\Models\Doctor",'id','doctor_id');
     }
 
     public function Subscription(){
