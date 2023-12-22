@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Datatables\Branch\BranchesDataTable;
 use App\Http\Requests\Branch\BranchRequest;
 use App\Models\Branch;
+use App\Models\Location;
 use App\Services\BranchesService;
 use App\Services\LocationsService;
 use Illuminate\Http\Request;
@@ -50,7 +51,8 @@ class BranchController extends Controller
 
     public function edit(Branch $branch)
     {
-        return view('admin.branch.edit', ['branch' => $branch]);
+        $city = Location::find($branch->city_id);
+        return view('admin.branch.edit', ['branch' => $branch,'city'=>$city]);
     }
 
     public function update(Branch $branch, BranchRequest $request)

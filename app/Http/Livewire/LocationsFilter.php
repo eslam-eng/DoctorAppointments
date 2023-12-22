@@ -3,14 +3,13 @@
 namespace App\Http\Livewire;
 
 use App\Services\LocationsService;
-use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 
 class LocationsFilter extends Component
 {
-    public Collection $countries;
-    public Collection $cities;
-    public Collection $areas;
+    public  $countries;
+    public  $cities;
+    public  $areas;
     public bool $show_areas = false;
     public mixed $selectedCountry = 0;
     public mixed $selectedCity = 0;

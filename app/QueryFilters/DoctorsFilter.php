@@ -24,10 +24,11 @@ class DoctorsFilter extends QueryFilter
 
     public function price($term)
     {
-        return $this->builder->where(function ($query) use($term){
-            $query->where('consultation_fees','<=',$term)
-                ->orWhere('chat_fees','<=',$term)
-                ->orWhere('call_fees','<=','term');
+        $price = explode('-', $term);
+        return $this->builder->where(function ($query) use ($price) {
+            $query->whereBetween('consultation_fees', $price)
+                ->whereBetween('chat_fees', $price)
+                ->whereBetween('call_fees', $price);
         });
     }
 

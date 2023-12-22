@@ -29,7 +29,11 @@
                                       enctype="multipart/form-data">
                                     @csrf
                                     @method('PATCH')
-                                    <livewire:locations-filter city_field_name="parent_id"/>
+                                    <livewire:locations-filter
+                                        selected-country="{{$area->ancestors->first()->id}}"
+                                        :cities="$cities"
+                                        selected-city="{{$area->ancestors->skip(1)->first()->id}}"
+                                        city_field_name="parent_id"/>
                                     <div class="row">
                                         @foreach(\App\Enum\AvailableLocales::cases() as $locale)
                                             <div class="col-lg-4 col-md-4">

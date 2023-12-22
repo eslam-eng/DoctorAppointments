@@ -17,6 +17,7 @@ class BranchesResource extends JsonResource
         return [
             'id'=>$this->id,
             'name'=>$this->name,
+            'filter_name'=>$this->name." | " . $this->city->title . ' | ' . $this->area->title,
 
         ];
     }

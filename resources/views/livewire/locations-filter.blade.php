@@ -14,8 +14,9 @@
                 </select>
             </div>
         </div>
+
         <div class="col-lg-4 col-md-4">
-            @isset($cities)
+            @if(isset($cities) || $selectedCity)
                 <div class="form-group">
                     <label for="exampleInputEmail1">@lang('message.select_city')</label>
                     <!-- City Dropdown -->
@@ -26,11 +27,11 @@
                         @endforeach
                     </select>
                 </div>
-            @endisset
+            @endif
         </div>
 
         <div class="col-lg-4 col-md-4">
-            @if(isset($areas) && $show_areas)
+            @if((isset($areas) && $show_areas )|| $selectedArea)
                 <div class="form-group">
                     <label for="exampleInputEmail1">@lang('message.select_area')</label>
                     <!-- City Dropdown -->
@@ -41,7 +42,7 @@
                         @endforeach
                     </select>
                 </div>
-            @endisset
+            @endif
         </div>
     </div>
 </div>

@@ -608,8 +608,6 @@ class ApiController extends Controller
                 $inset->password = $request->get("password");
                 $inset->email = $request->get("email");
                 $inset->branch_id = $request->get("branch_id");
-
-
                 if (env('ConnectyCube') == true) {
 
                     $login_field = $request->get("phone") . rand() . "#2";
@@ -639,7 +637,6 @@ class ApiController extends Controller
 
         }
         return json_encode($response, JSON_NUMERIC_CHECK);
-
     }
 
     public function doctorlogin(Request $request)
@@ -1650,6 +1647,8 @@ class ApiController extends Controller
                     $ls['description'] = $data->user_description;
                     $ls['connectycube_user_id'] = $data->doctorls->connectycube_user_id;
                     $ls['id'] = $data->id;
+                    $ls['appointment_type'] = $data->appointment_type;
+                    $ls['appointment_fees'] = $data->appointment_fees;
                     if ($data->prescription_file != "") {
                         $ls['prescription'] = asset('public/upload/prescription') . '/' . $data->prescription_file;
                     } else {
@@ -1707,6 +1706,8 @@ class ApiController extends Controller
                     $ls['connectycube_user_id'] = $data->patientls->connectycube_user_id;
                     $ls['description'] = $data->user_description;
                     $ls['id'] = $data->id;
+                    $ls['appointment_type'] = $data->appointment_type;
+                    $ls['appointment_fees'] = $data->appointment_fees;
                     if ($data->prescription_file != "") {
                         $ls['prescription'] = asset('public/upload/prescription') . '/' . $data->prescription_file;
                     } else {

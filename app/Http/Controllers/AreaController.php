@@ -60,7 +60,8 @@ class AreaController extends Controller
 
     public function edit(Location $area)
     {
-        return view('admin.locations.area.edit',['area' => $area]);
+        $cities = collect($area->ancestors->first()->children);
+        return view('admin.locations.area.edit',['area' => $area,'cities'=>$cities]);
     }
 
     public function update(Location $area, AreaRequest $request)

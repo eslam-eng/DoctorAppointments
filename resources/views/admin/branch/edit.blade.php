@@ -28,8 +28,19 @@
                                   enctype="multipart/form-data">
                                 @csrf
                                 @method('PATCH')
-                                <livewire:locations-filter city_field_name="location_id"/>
-                                @error('location_id')
+                                <livewire:locations-filter
+                                    selected-country="{{$city->parent_id}}"
+                                    city_field_name="city_id"
+                                    area_field_name="area_id"
+                                    :cities="$city->ancestors->first()->children"
+                                    :areas="$city->children"
+                                    selected-city="{{$city->id}}"
+                                    selected-area="{{$branch->area_id}}"
+                                />
+                                @error('city_id')
+                                <div class="text-danger">{{$message}}</div>
+                                @enderror
+                                @error('area_id')
                                 <div class="text-danger">{{$message}}</div>
                                 @enderror
                                 <div class="row">
