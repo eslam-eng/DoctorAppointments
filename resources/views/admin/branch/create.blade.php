@@ -37,13 +37,13 @@
                                             <div class="col-lg-6 col-md-6">
                                                 <div class="mb-1">
                                                     <label class="form-label"
-                                                           for="name{{$locale->value}}">{{ __('pages.name_'.$locale->value) }}
+                                                           for="name{{$locale->value}}">{{ __('message.name_'.$locale->value) }}
                                                         @if($loop->first)
                                                             <span class="text text-danger">*</span>
                                                         @endif
                                                     </label>
                                                     <input type="text" id="name{{$locale->value}}" value="{{old('name.'.$locale->value)}}" class="form-control"
-                                                           placeholder="{{ __('pages.name'.$locale->value) }}"
+                                                           placeholder="{{ __('message.name'.$locale->value) }}"
                                                            name="name[{{$locale->value}}]">
                                                 </div>
                                                 @error('name.'.$locale->value)
@@ -56,11 +56,11 @@
                                         <div class="col-lg-6 col-md-6">
                                             <div class="mb-1">
                                                 <label class="form-label"
-                                                       for="phone">{{ __('pages.phone') }}
+                                                       for="phone">{{ __('message.phone') }}
                                                     <span class="text text-danger">*</span>
                                                 </label>
                                                 <input type="text" id="phone" class="form-control"
-                                                       placeholder="{{ __('pages.phone') }}" value="{{old('phone')}}"
+                                                       placeholder="{{ __('message.phone') }}" value="{{old('phone')}}"
                                                        name="phone">
 
                                             </div>
@@ -72,10 +72,10 @@
                                         <div class="col-lg-6 col-md-6">
                                             <div class="mb-1">
                                                 <label class="form-label"
-                                                       for="phone">{{ __('pages.url') }}
+                                                       for="phone">{{ __('message.url') }}
                                                 </label>
                                                 <input type="url" id="phone" class="form-control"
-                                                       placeholder="{{ __('pages.url') }}" value="{{old('map_url')}}"
+                                                       placeholder="{{ __('message.url') }}" value="{{old('map_url')}}"
                                                        name="map_url">
                                             </div>
                                             @error('map_url')
@@ -86,10 +86,10 @@
                                         <div class="col-lg-8 col-md-8">
                                             <div class="mb-1">
                                                 <label class="form-label"
-                                                       for="phone">{{ __('pages.address') }}
+                                                       for="phone">{{ __('message.address') }}
                                                 </label>
                                                 <input type="text" id="phone" value="{{old('address')}}" class="form-control"
-                                                       placeholder="{{ __('pages.address') }}"
+                                                       placeholder="{{ __('message.address') }}"
                                                        name="address">
                                             </div>
                                             @error('address')

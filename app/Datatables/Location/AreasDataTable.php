@@ -67,7 +67,7 @@ class AreasDataTable extends DataTable
                 ->orderable(false),
 
             Column::make('parent_id')
-                ->title(__('message.parent'))
+                ->title(__('message.city'))
                 ->orderable(false)
                 ->searchable(false),
 
