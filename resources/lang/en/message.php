@@ -468,5 +468,6 @@
        'phone'=>'Name (En)',
        'url'=>'Name (En)',
        'branch_edit'=>'Branch Edit',
+       'branches'=>'Branches',
 
    ];
