@@ -267,3 +267,16 @@ Route::group(['prefix' => 'admin'], function () {
     });
 
 });
+
+Route::any('test-urway',function (){
+    $urway = new \App\Services\UrwayPayment\UrwayIntegrationService();
+    $urway->setTrackId('1')
+        ->setCustomerEmail('eslamelbadr011@gmail.com')
+        ->setMerchantIp(request()->ip())
+        ->setCurrency('USD')
+        ->setCountry('Saudi Arabia')
+        ->setAmount(500)
+        ->setEndPoint('https://payments-dev.urway-tech.com/URWAYPGService/transaction/jsonProcess/JSONrequest');
+
+    $response = $urway->pay();
+});

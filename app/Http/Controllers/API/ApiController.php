@@ -26,10 +26,12 @@ use App\Models\Subscription;
 use App\Models\TokenData;
 use App\Models\User;
 use App\Services\DoctorsService;
+use App\Services\UrwayPayment\UrwayIntegrationService;
 use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use DB;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Mail;
@@ -764,7 +766,6 @@ class ApiController extends Controller
                 } else {
                     DB::beginTransaction();
                     try {
-                        $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
                         $doctor = Doctor::find($request->get("doctor_id"));
                         if (!isset($doctor)) {
                             $response['success'] = "3";
@@ -780,47 +781,32 @@ class ApiController extends Controller
                         $data->phone = $request->get("phone");
                         $data->user_description = $request->get("user_description");
                         $data->appointment_type = $request->get("appointment_type");
+
+                        $data->appointment_fees = $this->getAppointmentFees(appointment_type: $data->appointment_type, doctor: $doctor);
+
                         if ($request->get("payment_type") == "COD") {
                             $data->payment_mode = "COD";
                             $data->is_completed = "1";
-
                         } else {
                             $data->payment_mode = "";
                             $data->is_completed = "0";
 
                         }
-                        $data->appointment_fees = $this->getAppointmentFees(appointment_type: $data->appointment_type, doctor: $doctor);
 
                         $data->save();
-                        if ($request->get("payment_type") == "COD") {
-                            $url = "";
-                        } else {
-                            $url = route('make-payment', ['id' => $data->id, "type" => '1']);
-                        }
-                        if ($data->payment_mode == "COD") {
-                            $store = new Settlement();
-                            $store->book_id = $data->id;
-                            $store->status = '0';
-                            $store->payment_date = $date->format('Y-m-d');
-                            $store->doctor_id = $data->doctor_id;
-                            $store->amount = $request->get("consultation_fees");
-                            $store->save();
-                            $msg = __("apimsg.You have a new upcoming appointment");
-                            $user = User::find(1);
-                            $android = $this->send_notification_android($user->android_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
-                            $ios = $this->send_notification_IOS($user->ios_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
-                            try {
-                                $user = $doctor;
-                                $user->msg = $msg;
 
-                                $result = Mail::send('email.Ordermsg', ['user' => $user], function ($message) use ($user) {
-                                    $message->to($user->email, $user->name)->subject(__('message.System Name'));
-                                });
-
-                            } catch (\Exception $e) {
-                                logger($e);
-                            }
+                        if ($data->is_completed)
+                        {
+                            $this->createSettlement($data);
+                        }else{
+                            $url = $this->getPaymentUrl($data);
                         }
+
+                        $user = User::find(1);
+                        $msg = __("apimsg.You have a new upcoming appointment");
+                        $this->send_notification_android($user->android_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
+                        $this->send_notification_IOS($user->ios_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
+
                         $response['success'] = "1";
                         $response['register'] = "Appointment Book Successfully";
                         $response['data'] = $data->id;
@@ -831,7 +817,6 @@ class ApiController extends Controller
                         $response['success'] = "0";
                         $response['register'] = $e;
                     }
-
                 }
             } else {
                 $response['success'] = "3";
@@ -849,6 +834,40 @@ class ApiController extends Controller
             AppointmentTypeEnum::CHATFEES->value => $doctor->chat_fees,
             AppointmentTypeEnum::CONSULTATIONFESS->value => $doctor->consultation_fees
         };
+    }
+
+    private function createSettlement(BookAppointment $data)
+    {
+        $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
+        $store = new Settlement();
+        $store->book_id = $data->id;
+        $store->status = '0';
+        $store->payment_date = $date->format('Y-m-d');
+        $store->doctor_id = $data->doctor_id;
+        $store->amount = $data->appointment_fees;
+        $store->save();
+
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    private function getPaymentUrl(BookAppointment $data)
+    {
+        $user = User::find($data->user_id);
+        $urway = new UrwayIntegrationService();
+        $urway->setTrackId($data->id)
+            ->setCustomerEmail($user->email)
+            ->setMerchantIp(request()->ip())
+            ->setCurrency('SR')
+            ->setCountry('Saudi Arabia')
+            ->setAmount($data->appointment_fees)
+            ->setEndPoint(config('urway.auth.urway_endpoint'));
+        $response = $urway->pay();
+        $payment_url =  $response->getPaymentUrl();
+        if (!isset($payment_url))
+            throw new \Exception('there is an error');
+        return $payment_url;
     }
 
     public function viewdoctor(Request $request)
@@ -872,7 +891,7 @@ class ApiController extends Controller
             }
             $response['register'] = $message;
         } else {
-            $getdetail = Doctor::query()->with(['branch.city','branch.area'])->find($request->get("doctor_id"));
+            $getdetail = Doctor::query()->with(['branch.city', 'branch.area'])->find($request->get("doctor_id"));
             if (empty($getdetail)) {
                 $response['success'] = "0";
                 $response['register'] = "Doctor Not Found";

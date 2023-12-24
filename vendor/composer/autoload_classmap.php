@@ -116,6 +116,8 @@ return array(
     'App\\Services\\BranchesService' => $baseDir . '/app/Services/BranchesService.php',
     'App\\Services\\DoctorsService' => $baseDir . '/app/Services/DoctorsService.php',
     'App\\Services\\LocationsService' => $baseDir . '/app/Services/LocationsService.php',
+    'App\\Services\\UrwayPayment\\UrwayIntegrationService' => $baseDir . '/app/Services/UrwayPayment/UrwayIntegrationService.php',
+    'App\\Services\\UrwayPayment\\UrwayResponseService' => $baseDir . '/app/Services/UrwayPayment/UrwayResponseService.php',
     'App\\Traits\\EscapeUnicodeJson' => $baseDir . '/app/Traits/EscapeUnicodeJson.php',
     'App\\Traits\\Filterable' => $baseDir . '/app/Traits/Filterable.php',
     'Asm89\\Stack\\Cors' => $vendorDir . '/asm89/stack-cors/src/Cors.php',

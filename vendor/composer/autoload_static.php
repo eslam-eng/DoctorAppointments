@@ -838,6 +838,8 @@ class ComposerStaticInitb757bdeae49da6f92b07aa489872e548
         'App\\Services\\BranchesService' => __DIR__ . '/../..' . '/app/Services/BranchesService.php',
         'App\\Services\\DoctorsService' => __DIR__ . '/../..' . '/app/Services/DoctorsService.php',
         'App\\Services\\LocationsService' => __DIR__ . '/../..' . '/app/Services/LocationsService.php',
+        'App\\Services\\UrwayPayment\\UrwayIntegrationService' => __DIR__ . '/../..' . '/app/Services/UrwayPayment/UrwayIntegrationService.php',
+        'App\\Services\\UrwayPayment\\UrwayResponseService' => __DIR__ . '/../..' . '/app/Services/UrwayPayment/UrwayResponseService.php',
         'App\\Traits\\EscapeUnicodeJson' => __DIR__ . '/../..' . '/app/Traits/EscapeUnicodeJson.php',
         'App\\Traits\\Filterable' => __DIR__ . '/../..' . '/app/Traits/Filterable.php',
         'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Cors.php',
