@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\BranchController;
+use App\Http\Controllers\API\UrwayCallbackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ApiController;
@@ -81,4 +82,5 @@ Route::any("about",[ApiController::class,"about"]);
 Route::any("privecy",[ApiController::class,"privecy"]);
 
 Route::get('branches', BranchController::class);
+Route::any('urway/callback', UrwayCallbackController::class);
 

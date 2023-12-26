@@ -788,9 +788,8 @@ class ApiController extends Controller
                             $data->payment_mode = "COD";
                             $data->is_completed = "1";
                         } else {
-                            $data->payment_mode = "";
+                            $data->payment_mode = null;
                             $data->is_completed = "0";
-
                         }
 
                         $data->save();
@@ -862,6 +861,7 @@ class ApiController extends Controller
             ->setCurrency('SR')
             ->setCountry('Saudi Arabia')
             ->setAmount($data->appointment_fees)
+            ->setRedirectUrl(config('urway.auth.redirect_url'))
             ->setEndPoint(config('urway.auth.urway_endpoint'));
         $response = $urway->pay();
         $payment_url =  $response->getPaymentUrl();

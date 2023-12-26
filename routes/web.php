@@ -276,7 +276,9 @@ Route::any('test-urway',function (){
         ->setCurrency('USD')
         ->setCountry('Saudi Arabia')
         ->setAmount(500)
+        ->setRedirectUrl('http://127.0.0.1:8000/api/urway/callback')
         ->setEndPoint('https://payments-dev.urway-tech.com/URWAYPGService/transaction/jsonProcess/JSONrequest');
 
     $response = $urway->pay();
+    dd($response->getPaymentUrl());
 });

@@ -7,5 +7,6 @@ return [
         'password' => env('URWAY_PASSWORD'),
         'merchant_key' => env('URWAY_MERCHANT_KEY'),
         'urway_endpoint' => env('URWAY_ENDPOINT'),
+        'redirect_url' => env('URWAY_REDIRECT_URL'),
     ],
 ];
