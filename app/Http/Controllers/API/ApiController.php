@@ -787,19 +787,14 @@ class ApiController extends Controller
                         if ($request->get("payment_type") == "COD") {
                             $data->payment_mode = "COD";
                             $data->is_completed = "1";
+                            $this->createSettlement($data);
                         } else {
                             $data->payment_mode = null;
                             $data->is_completed = "0";
+                            $url = $this->getPaymentUrl($data);
                         }
 
                         $data->save();
-
-                        if ($data->is_completed)
-                        {
-                            $this->createSettlement($data);
-                        }else{
-                            $url = $this->getPaymentUrl($data);
-                        }
 
                         $user = User::find(1);
                         $msg = __("apimsg.You have a new upcoming appointment");
