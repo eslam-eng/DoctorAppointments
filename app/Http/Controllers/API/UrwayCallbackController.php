@@ -49,9 +49,12 @@ class UrwayCallbackController extends Controller
         UrwayTransactions::query()->create($urway_transaction_data);
     }
 
-    private function updateAppointmentStatus(?array $responseData, BookAppointment $bookAppointment)
+    private function updateAppointmentStatus(?array $responseData, $bookAppointment)
     {
-        $bookAppointment->update(['payment_mode' => Arr::get($responseData, 'cardBrand'), 'is_completed' => 1]);
+        $bookAppointment = new BookAppointment();
+        $bookAppointment->payment_mode =Arr::get($responseData, 'cardBrand');
+        $bookAppointment->is_completed =1;
+        $bookAppointment->save();
     }
 
     private function createSettlement(BookAppointment $bookAppointment)
