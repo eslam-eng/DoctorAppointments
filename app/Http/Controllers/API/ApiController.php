@@ -721,108 +721,116 @@ class ApiController extends Controller
 
     public function bookappointment(Request $request)
     {
-        $response = array("success" => "0", "register" => "Validation error");
-        $rules = [
-            'user_id' => 'required',
-            'doctor_id' => 'required',
-            'date' => 'required',
-            'slot_id' => 'required',
-            'slot_name' => 'required',
-            'phone' => 'required',
-            'user_description' => 'required',
-            'payment_type' => 'required',
-            'appointment_type' => ['required', Rule::in(AppointmentTypeEnum::values())],
-        ];
-        $messages = array(
-            'user_id.required' => "user_id is required",
-            'doctor_id.required' => "doctor_id is required",
-            'date.required' => "date is required",
-            'slot_id.required' => "slot_id is required",
-            'slot_name.required' => "slot_name is required",
-            'phone.required' => "phone is required",
-            'user_description.required' => "user_description is required",
-            'payment_method_nonce.required' => "payment_method_nonce is required",
-            'appointment_type.required' => "please choose Appointment is required",
-            "payment_type.required" => "Payment Type is Required",
-            "stripeToken.required" => "stripeToken is required"
-        );
+        try {
 
-        $validator = Validator::make($request->all(), $rules, $messages);
+            $response = array("success" => "0", "register" => "Validation error");
+            $rules = [
+                'user_id' => 'required',
+                'doctor_id' => 'required',
+                'date' => 'required',
+                'slot_id' => 'required',
+                'slot_name' => 'required',
+                'phone' => 'required',
+                'user_description' => 'required',
+                'payment_type' => 'required',
+                'appointment_type' => ['required', Rule::in(AppointmentTypeEnum::values())],
+            ];
+            $messages = array(
+                'user_id.required' => "user_id is required",
+                'doctor_id.required' => "doctor_id is required",
+                'date.required' => "date is required",
+                'slot_id.required' => "slot_id is required",
+                'slot_name.required' => "slot_name is required",
+                'phone.required' => "phone is required",
+                'user_description.required' => "user_description is required",
+                'payment_method_nonce.required' => "payment_method_nonce is required",
+                'appointment_type.required' => "please choose Appointment is required",
+                "payment_type.required" => "Payment Type is Required",
+                "stripeToken.required" => "stripeToken is required"
+            );
 
-        if ($validator->fails()) {
-            $message = '';
-            $messages_l = json_decode(json_encode($validator->messages()), true);
-            foreach ($messages_l as $msg) {
-                $message .= $msg[0] . ", ";
-            }
-            $response['register'] = $message;
-        } else {
-            if (Patient::find($request->get("user_id"))) {
+            $validator = Validator::make($request->all(), $rules, $messages);
 
-                $getappointment = BookAppointment::where("date", $request->get("date"))->where('is_completed', '1')->where("slot_id", $request->get("slot_id"))->first();
-                if ($getappointment) {
-                    $response['success'] = "0";
-                    $response['register'] = "Slot Already Booked";
-                } else {
-                    DB::beginTransaction();
-                    try {
-                        $doctor = Doctor::find($request->get("doctor_id"));
-                        if (!isset($doctor)) {
-                            $response['success'] = "3";
-                            $response['register'] = "Doctor not found";
-                            return json_encode($response, JSON_NUMERIC_CHECK);
-                        }
-                        $data = new BookAppointment();
-                        $data->user_id = $request->get("user_id");
-                        $data->doctor_id = $request->get("doctor_id");
-                        $data->slot_id = $request->get("slot_id");
-                        $data->slot_name = $request->get("slot_name");
-                        $data->date = $request->get("date");
-                        $data->phone = $request->get("phone");
-                        $data->user_description = $request->get("user_description");
-                        $data->appointment_type = $request->get("appointment_type");
-
-                        $data->appointment_fees = $this->getAppointmentFees(appointment_type: $data->appointment_type, doctor: $doctor);
-
-                        if ($request->get("payment_type") == "COD") {
-                            $data->payment_mode = "COD";
-                            $data->is_completed = "1";
-                            $url = '';
-                        } else {
-                            $data->payment_mode = null;
-                            $data->is_completed = "0";
-
-                        }
-
-                        $data->save();
-
-                        if ($request->get("payment_type") == "COD" && $data->is_completed)
-                            $this->createSettlement($data);
-                        else
-                            $url = $this->getPaymentUrl($data);
-
-                        $user = User::find(1);
-                        $msg = __("apimsg.You have a new upcoming appointment");
-                        $this->send_notification_android($user->android_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
-                        $this->send_notification_IOS($user->ios_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
-
-                        $response['success'] = "1";
-                        $response['register'] = "Appointment Book Successfully";
-                        $response['data'] = $data->id;
-                        $response['url'] = $url;
-                        DB::commit();
-                    } catch (\Exception $e) {
-                        DB::rollback();
-                        $response['success'] = "0";
-                        $response['register'] = $e;
-                    }
+            if ($validator->fails()) {
+                $message = '';
+                $messages_l = json_decode(json_encode($validator->messages()), true);
+                foreach ($messages_l as $msg) {
+                    $message .= $msg[0] . ", ";
                 }
+                $response['register'] = $message;
             } else {
-                $response['success'] = "3";
-                $response['register'] = "user not found";
+                if (Patient::find($request->get("user_id"))) {
+
+                    $getappointment = BookAppointment::where("date", $request->get("date"))->where('is_completed', '1')->where("slot_id", $request->get("slot_id"))->first();
+                    if ($getappointment) {
+                        $response['success'] = "0";
+                        $response['register'] = "Slot Already Booked";
+                    } else {
+                        DB::beginTransaction();
+                        try {
+                            $doctor = Doctor::find($request->get("doctor_id"));
+                            if (!isset($doctor)) {
+                                $response['success'] = "3";
+                                $response['register'] = "Doctor not found";
+                                return json_encode($response, JSON_NUMERIC_CHECK);
+                            }
+                            $data = new BookAppointment();
+                            $data->user_id = $request->get("user_id");
+                            $data->doctor_id = $request->get("doctor_id");
+                            $data->slot_id = $request->get("slot_id");
+                            $data->slot_name = $request->get("slot_name");
+                            $data->date = $request->get("date");
+                            $data->phone = $request->get("phone");
+                            $data->user_description = $request->get("user_description");
+                            $data->appointment_type = $request->get("appointment_type");
+
+                            $data->appointment_fees = $this->getAppointmentFees(appointment_type: $data->appointment_type, doctor: $doctor);
+
+                            if ($request->get("payment_type") == "COD") {
+                                $data->payment_mode = "COD";
+                                $data->is_completed = "1";
+                                $url = '';
+                            } else {
+                                $data->payment_mode = null;
+                                $data->is_completed = "0";
+
+                            }
+
+                            $data->save();
+
+                            if ($request->get("payment_type") == "COD" && $data->is_completed)
+                                $this->createSettlement($data);
+                            else
+                                $url = $this->getPaymentUrl($data);
+
+                            $user = User::find(1);
+                            $msg = __("apimsg.You have a new upcoming appointment");
+                            $this->send_notification_android($user->android_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
+                            $this->send_notification_IOS($user->ios_key, $msg, $request->get("doctor_id"), "doctor_id", $data->id);
+
+                            $response['success'] = "1";
+                            $response['register'] = "Appointment Book Successfully";
+                            $response['data'] = $data->id;
+                            $response['url'] = $url;
+                            DB::commit();
+                        } catch (\Exception $e) {
+                            DB::rollback();
+                            $response['success'] = "0";
+                            $response['register'] = $e;
+                        }
+                    }
+                } else {
+                    $response['success'] = "3";
+                    $response['register'] = "user not found";
+                }
             }
+            return json_encode($response, JSON_NUMERIC_CHECK);
+        }catch (\Exception $exception)
+        {
+            $response['success'] = "0";
+            $response['message'] = $exception->getMessage();
+            return json_encode($response, JSON_NUMERIC_CHECK);
         }
-        return json_encode($response, JSON_NUMERIC_CHECK);
 
     }
 
