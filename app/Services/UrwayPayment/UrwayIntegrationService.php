@@ -22,7 +22,7 @@ class UrwayIntegrationService
     /**
      * @return $this
      */
-    public function setTrackId(string $trackId): static
+    public function setTrackId(string|int $trackId): static
     {
         $this->attributes['trackid'] = $trackId;
         return $this;

@@ -787,14 +787,19 @@ class ApiController extends Controller
                         if ($request->get("payment_type") == "COD") {
                             $data->payment_mode = "COD";
                             $data->is_completed = "1";
-                            $this->createSettlement($data);
+                            $url = '';
                         } else {
                             $data->payment_mode = null;
                             $data->is_completed = "0";
-                            $url = $this->getPaymentUrl($data);
+
                         }
 
                         $data->save();
+
+                        if ($request->get("payment_type") == "COD" && $data->is_completed)
+                            $this->createSettlement($data);
+                        else
+                            $url = $this->getPaymentUrl($data);
 
                         $user = User::find(1);
                         $msg = __("apimsg.You have a new upcoming appointment");
@@ -830,7 +835,7 @@ class ApiController extends Controller
         };
     }
 
-    private function createSettlement(BookAppointment $data)
+    private function createSettlement($data)
     {
         $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
         $store = new Settlement();
@@ -845,15 +850,18 @@ class ApiController extends Controller
 
     /**
      * @throws GuzzleException
+     * @throws \Exception
      */
-    private function getPaymentUrl(BookAppointment $data)
+    private function getPaymentUrl($data)
     {
-        $user = User::find($data->user_id);
+        if ($data->appointment_fees < 1)
+            throw new \Exception('ammount should be grather than zero');
+        $patient = Patient::find($data->user_id);
         $urway = new UrwayIntegrationService();
         $urway->setTrackId($data->id)
-            ->setCustomerEmail($user->email)
+            ->setCustomerEmail($patient->email)
             ->setMerchantIp(request()->ip())
-            ->setCurrency('SR')
+            ->setCurrency('SAR')
             ->setCountry('Saudi Arabia')
             ->setAmount($data->appointment_fees)
             ->setRedirectUrl(config('urway.auth.redirect_url'))

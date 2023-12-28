@@ -19,7 +19,6 @@ class UrwayResponseService
         if (!empty($this->data['payid']) && !empty($this->data['targetUrl'])) {
             return $this->data['targetUrl'] . '?paymentid=' . $this->data['payid'];
         }
-
         return false;
     }
 
