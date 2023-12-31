@@ -24,7 +24,7 @@ class UrwayCallbackController extends Controller
             $responseData = \request()->all();
             if (Arr::get($responseData, 'ResponseCode') == '000' && Arr::get($responseData, 'Result') == 'Successful') {
                 $bookAppointment = BookAppointment::find(Arr::get($responseData, 'TrackId'));
-                $this->updateAppointmentStatus($responseData, $bookAppointment);
+                $this->updateAppointmentStatus($responseData);
                 $this->createTransactionData($responseData);
                 $this->createSettlement($bookAppointment);
                 return apiResponse(message: 'successfully paid');
@@ -49,7 +49,7 @@ class UrwayCallbackController extends Controller
         UrwayTransactions::query()->create($urway_transaction_data);
     }
 
-    private function updateAppointmentStatus(?array $responseData, $bookAppointment)
+    private function updateAppointmentStatus(?array $responseData)
     {
         $bookAppointment = new BookAppointment();
         $bookAppointment->payment_mode =Arr::get($responseData, 'cardBrand');
@@ -57,7 +57,7 @@ class UrwayCallbackController extends Controller
         $bookAppointment->save();
     }
 
-    private function createSettlement(BookAppointment $bookAppointment)
+    private function createSettlement($bookAppointment)
     {
         $date = DateTime::createFromFormat('d', 15)->add(new DateInterval('P1M'));
         $store = new Settlement();
