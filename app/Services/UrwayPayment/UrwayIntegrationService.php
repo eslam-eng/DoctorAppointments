@@ -172,29 +172,30 @@ class UrwayIntegrationService
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException|\Exception
      */
-    public function find(string $transaction_id)
+    public function find(array $urwayResponseData)
     {
-        // According to documentation we have to send the `terminal_id`, and `password` now.
-        $this->setAuthAttributes();
+        $currency = 'SAR';
+        $txn_details1 = $urwayResponseData['TrackId'] . '|' . config('urway.auth.terminal_id') . '|' . config('urway.auth.password') . '|' . config('urway.auth.merchant_key') . '|' . $urwayResponseData['amount'] . '|' . $currency;
+        $requestHash1 = hash('sha256', $txn_details1);
 
-        // As requestHas for paying request is different from requestHash for find request.
-        $this->generateRequestHash();
+        $apiResponseFields = [
+            'trackid' => $urwayResponseData['TrackId'],
+            'terminalId' => config('urway.auth.terminal_id'),
+            'action' => '10',
+            'merchantIp' => request()->ip(),
+            'password' => config('urway.auth.password'),
+            'currency' => $currency,
+            'transid' => $urwayResponseData['TranId'],
+            'amount' => $urwayResponseData['amount'],
+            'requestHash' => $requestHash1
+        ];
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Content-Length' => strlen(json_encode($apiResponseFields)),
+        ])->post($this->getEndPoint(), $apiResponseFields);
 
-        $this->attributes['transid'] = $transaction_id;
+        return new UrwayResponseService($response->json());
 
-        try {
-            $response = $this->guzzleClient->request(
-                $this->method,
-                $this->getEndPointPath(),
-                [
-                    'json' => $this->attributes,
-                ]
-            );
-
-            return new Response((string)$response->getBody());
-        } catch (\Throwable $e) {
-            throw new \Exception($e->getMessage());
-        }
     }
 
     /**
@@ -228,7 +229,7 @@ class UrwayIntegrationService
 
     public function getEndPoint()
     {
-        return $this->endpoint;
+        return $this->endpoint ?? config('urway.auth.urway_endpoint');
     }
 
 
