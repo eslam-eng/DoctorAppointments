@@ -47,7 +47,7 @@ class UrwayCallbackController extends Controller
             'amount' => Arr::get($responseData, 'amount'),
             'masked_pan' => Arr::get($responseData, 'maskedPAN')
         ];
-        UrwayTransactions::query()->create($urway_transaction_data);
+        UrwayTransactions::query()->updateOrCreate(['tran_id' => Arr::get($responseData, 'TranId')],$urway_transaction_data);
     }
 
     private function updateAppointmentStatus(?array $responseData,$bookAppointment)
