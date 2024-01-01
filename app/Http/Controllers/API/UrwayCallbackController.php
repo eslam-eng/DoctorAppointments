@@ -38,7 +38,7 @@ class UrwayCallbackController extends Controller
                     return apiResponse(message: 'there is an error please contact with support');
                 }
             } else {
-                return apiResponse(message: $response->getResponseMessage());
+                return apiResponse(message: $response->getResponseMessage(),code: 400);
             }
         } catch (\Exception $exception) {
             return apiResponse(message: $exception->getMessage(), code: 500);
