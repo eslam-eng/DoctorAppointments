@@ -10,6 +10,7 @@ use App\Services\BranchesService;
 use DateInterval;
 use DateTime;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 
 class UrwayCallbackController extends Controller
@@ -24,10 +25,10 @@ class UrwayCallbackController extends Controller
             $responseData = \request()->all();
             if (Arr::get($responseData, 'ResponseCode') == '000' && Arr::get($responseData, 'Result') == 'Successful') {
                 $bookAppointment = BookAppointment::find(Arr::get($responseData, 'TrackId'));
-                $this->updateAppointmentStatus($responseData);
+                $this->updateAppointmentStatus($responseData,$bookAppointment);
                 $this->createTransactionData($responseData);
                 $this->createSettlement($bookAppointment);
-                return apiResponse(message: 'successfully paid');
+                return apiResponse(data:['transaction_id'=>$responseData['TranId']],message: 'successfully paid');
             } else {
                 return apiResponse(message: 'there is an error please try again later', code: 422);
             }
@@ -49,12 +50,12 @@ class UrwayCallbackController extends Controller
         UrwayTransactions::query()->create($urway_transaction_data);
     }
 
-    private function updateAppointmentStatus(?array $responseData)
+    private function updateAppointmentStatus(?array $responseData,$bookAppointment)
     {
-        $bookAppointment = new BookAppointment();
-        $bookAppointment->payment_mode =Arr::get($responseData, 'cardBrand');
-        $bookAppointment->is_completed =1;
-        $bookAppointment->save();
+        DB::table('book_appointment')->where('id',$bookAppointment->id)->update([
+            'payment_mode'=>Arr::get($responseData, 'cardBrand'),
+            'is_completed'=>1
+        ]);
     }
 
     private function createSettlement($bookAppointment)
