@@ -282,3 +282,12 @@ Route::any('test-urway',function (){
     $response = $urway->pay();
     dd($response->getPaymentUrl());
 });
+
+Route::get('/migrate', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate');
+        return 'Migrations were run successfully.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});

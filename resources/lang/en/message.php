@@ -465,8 +465,8 @@
        'select_area'=>'Select Area',
        'name_ar'=>'Name (Ar)',
        'name_en'=>'Name (En)',
-       'phone'=>'Name (En)',
-       'url'=>'Name (En)',
+       'phone'=>'Phone',
+       'url'=>'Map Url',
        'branch_edit'=>'Branch Edit',
        'branches'=>'Branches',
 

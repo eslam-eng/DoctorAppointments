@@ -8,13 +8,22 @@
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="row">
                     <div class="col-12">
                         <div class="page-title-box d-flex align-items-center justify-content-between">
-                            <h4 class="mb-0">{{__("message.branches_list")}}</h4>
+                            <h4 class="mb-0">{{__("message.add_branch")}}</h4>
                             <div class="page-title-right">
                                 <ol class="breadcrumb m-0">
-                                    <li class="breadcrumb-item active">{{__("message.branches_list")}}</li>
+                                    <li class="breadcrumb-item active">{{__("message.add_branch")}}</li>
                                 </ol>
                             </div>
                         </div>
@@ -75,7 +84,7 @@
                                                        for="phone">{{ __('message.url') }}
                                                 </label>
                                                 <input type="url" id="phone" class="form-control"
-                                                       placeholder="{{ __('message.url') }}" value="{{old('map_url')}}"
+                                                       placeholder="{{ __('message.map_url') }}" value="{{old('map_url')}}"
                                                        name="map_url">
                                             </div>
                                             @error('map_url')
