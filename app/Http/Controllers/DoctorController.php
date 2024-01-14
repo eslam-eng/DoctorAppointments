@@ -155,7 +155,7 @@ class DoctorController extends Controller
 
     public function postapprovedoctor($id, $status)
     {
-        if (Session::get("is_demo") == '0') {
+        if (false) {
             Session::flash('message', "This Action Disable In Demo");
             Session::flash('alert-class', 'alert-danger');
             return redirect()->back();
