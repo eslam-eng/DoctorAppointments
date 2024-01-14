@@ -7,7 +7,6 @@ use App\Models\BookAppointment;
 use App\Models\Settlement;
 use App\Models\UrwayTransactions;
 use App\Services\UrwayPayment\UrwayIntegrationService;
-use App\Services\UrwayPayment\UrwayResponseService;
 use DateInterval;
 use DateTime;
 use Illuminate\Support\Arr;
@@ -35,10 +34,10 @@ class UrwayCallbackController extends Controller
                     $this->createSettlement($bookAppointment);
                     return apiResponse(data: ['transaction_id' => $responseData['TranId']], message: 'successfully paid');
                 } else {
-                    return apiResponse(message: 'there is an error please contact with support');
+                    return apiResponse(message: $response->getResponseMessage(), code: 400);
                 }
             } else {
-                return apiResponse(message: $response->getResponseMessage(),code: 400);
+                return apiResponse(message: $response->getResponseMessage(), code: 400);
             }
         } catch (\Exception $exception) {
             return apiResponse(message: $exception->getMessage(), code: 500);
