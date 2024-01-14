@@ -130,22 +130,11 @@ class DoctorController extends Controller
                 $timeing = url('admin/doctortiming', array('id' => $doctors->id));
                 $delete = url('admin/deletedoctor', array('id' => $doctors->id));
                 $doctorapprove = url('admin/approvedoctor', array('id' => $doctors->id, "approve" => '1'));
-                $txt = "";
-                $setting = Setting::find(1);
-                if ($setting->doctor_approved == '1') {
-                    if ($doctors->is_approve == '0') {
-                        $txt = '<a  rel="tooltip" title="" href="' . $doctorapprove . '" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-ban f-s-25" style="margin-left: 10px;color:red"></i></a>';
-                    } else {
-                        $txt = '<i class="fa fa-ban f-s-25" style="margin-left: 10px;color:green"></i>';
-                    }
-                } else if ($setting->doctor_approved == '0' && $setting->is_demo == '1') {
-                    if ($doctors->is_approve == '0') {
-                        $txt = '<a  rel="tooltip" title="" href="' . $doctorapprove . '" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-ban f-s-25" style="margin-left: 10px;color:red"></i></a>';
-                    } else {
-                        $txt = '<i class="fa fa-ban f-s-25" style="margin-left: 10px;color:green"></i>';
-                    }
+                $doctor_non_approve = url('admin/approvedoctor', array('id' => $doctors->id, "approve" => '0'));
+                if ($doctors->is_approve == '0') {
+                    $txt = '<a  rel="tooltip" title="" href="' . $doctorapprove . '" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-check f-s-25" style="margin-left: 10px;color:green"></i></a>';
                 } else {
-
+                    $txt = '<a  rel="tooltip" title="" href="' . $doctor_non_approve . '" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-ban f-s-25" style="margin-left: 10px;color:red"></i></a>';
                 }
                 $return = '<a  rel="tooltip" title="" href="' . $edit . '" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-edit f-s-25" style="margin-right: 10px;"></i></a><a  rel="tooltip" title="" href="' . $timeing . '" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-clock f-s-25" style="margin-right: 10px;"></i></a><a onclick="delete_record(' . "'" . $delete . "'" . ')" rel="tooltip" title="" class="m-b-10 m-l-5" data-original-title="Remove"><i class="fa fa-trash f-s-25"></i></a>' . $txt;
                 return $return;
