@@ -122,19 +122,19 @@
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <label for="aboutus">{{__("message.chat_fees")}}<span
+                                                <label for="aboutus">chat_fees<span
                                                         class="reqfield">*</span></label>
                                                 <input type="number" required name="chat_fees"
-                                                       value="{{isset($data->consultation_fees)?$data->consultation_fees:''}}"
+                                                       value="{{isset($data->call_fees)?$data->call_fees:0}}"
                                                        class="form-control" id="consultation_fees" min="1" step="0.01">
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <label for="aboutus">{{__("message.call_fees")}}<span
+                                                <label for="aboutus">call_fees<span
                                                         class="reqfield">*</span></label>
                                                 <input type="number" required name="call_fees"
-                                                       value="{{isset($data->consultation_fees)?$data->consultation_fees:''}}"
+                                                       value="{{isset($data->call_fees)?$data->call_fees:0}}"
                                                        class="form-control" id="consultation_fees" min="1" step="0.01">
                                             </div>
                                         </div>

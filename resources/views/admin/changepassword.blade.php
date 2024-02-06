@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title')
-{{__("message.Change Password")}} | {{__("message.Admin")}} 
+{{__("message.Change Password")}} | {{__("message.Admin")}}
 @stop
 @section('meta-data')
 @stop
@@ -35,7 +35,7 @@
                      </div>
                      @endif
                      <form action="{{url('admin/updatepassword')}}" method="post" >
-                        {{csrf_field()}}  
+                        {{csrf_field()}}
                         <div class="form-group">
                            <label for="formrow-firstname-input">{{__("message.Enter Your Current Password")}}</label>
                            <input type="password" class="form-control" id="currentpwd" name="currentpwd" placeholder='{{__("message.Enter Your Current Password")}}' required onchange="currentpwdnew(this.value)">
@@ -49,11 +49,11 @@
                            <input type="password" class="form-control" id="repwd" name="repwd" placeholder='{{__("message.Re Enter New Password")}}' required onchange="checkmatchpassword(this.value)">
                         </div>
                         <div class="mt-4">
-                            @if(Session::get("is_demo")=='0')
+                            @if(false)
                               <button type="button" onclick="disablebtn()" class="btn btn-primary">{{__('message.Submit')}}</button>
                            @else
                                <button  class="btn btn-primary" type="submit" value="Submit">{{__("message.Submit")}}</button>
-                           @endif 
+                           @endif
                         </div>
                      </form>
                   </div>
@@ -69,7 +69,7 @@
   function checkmatchpassword(val){
     var npwd=$("#newpwd").val();
     if(npwd!=val){
-        alert('{{__("message.Password And Confirm Password Must Be Same")}}');        
+        alert('{{__("message.Password And Confirm Password Must Be Same")}}');
         $("#repwd").val("");
     }
 }

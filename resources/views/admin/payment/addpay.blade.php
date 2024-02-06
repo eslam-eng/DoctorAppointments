@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title')
-{{__("message.Add Payment")}} | {{__("message.Admin")}} 
+{{__("message.Add Payment")}} | {{__("message.Admin")}}
 @stop
 @section('meta-data')
 @stop
@@ -37,26 +37,26 @@
                      <form action="{{url('admin/updatepayment')}}" method="post" >
                          <input type="hidden" name="doctor_id" id="doctor_id" value="{{$book->doctor_id}}"/>
                          <input type="hidden" name="amount" id="amount" value="{{$book->amount}}"/>
-                        {{csrf_field()}}  
+                        {{csrf_field()}}
                         <div class="form-group">
                            <label for="formrow-firstname-input">{{__("message.Doctor Name")}}</label> {{$book->name}}
                         </div>
-                        
+
                         <div class="form-group">
                            <label for="formrow-firstname-input">{{__("message.Amount")}}</label> {{$book->amount}}
                         </div>
-                        
+
                         <div class="form-group">
                            <label for="formrow-firstname-input">{{__("message.translation_id")}}</label>
                            <input type="text" class="form-control" id="translation_id" name="translation_id" placeholder='{{__("message.translation_id")}}' required>
                         </div>
-                       
+
                         <div class="mt-4">
-                            @if(Session::get("is_demo")=='0')
+                            @if(false)
                               <button type="button" onclick="disablebtn()" class="btn btn-primary">{{__('message.Submit')}}</button>
                            @else
                                <button  class="btn btn-primary" type="submit" value="Submit">{{__("message.pay")}}</button>
-                           @endif 
+                           @endif
                         </div>
                      </form>
                   </div>
