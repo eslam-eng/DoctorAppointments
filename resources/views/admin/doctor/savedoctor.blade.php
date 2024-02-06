@@ -182,22 +182,20 @@
                                         </div>
                                         <div class="col-lg-6">
                                             <div class="form-group">
-                                                <label for="facebook_url">{{__("message.Facebook Url")}}<span
-                                                        class="reqfield">*</span></label>
+                                                <label for="facebook_url">{{__("message.Facebook Url")}}</label>
                                                 <input type="text" class="form-control" id="facebook_url"
                                                        name="facebook_url"
                                                        placeholder='{{__("message.Enter Facebook Url")}}'
                                                        value="{{isset($data->facebook_url)?$data->facebook_url:''}}"
-                                                       required="">
+                                                       >
                                             </div>
                                             <div class="form-group">
-                                                <label for="twitter_url">{{__("message.Twitter Url")}}<span
-                                                        class="reqfield">*</span></label>
+                                                <label for="twitter_url">{{__("message.Twitter Url")}}</label>
                                                 <input type="text" class="form-control" id="twitter_url"
                                                        name="twitter_url"
                                                        placeholder='{{__("message.Enter Twitter Url")}}'
                                                        value="{{isset($data->twitter_url)?$data->twitter_url:''}}"
-                                                       required="">
+                                                       >
                                             </div>
                                         </div>
                                     </div>
