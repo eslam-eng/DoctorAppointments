@@ -9,4 +9,3 @@ class Setting extends Model
     protected $table = 'setting';
     protected $primaryKey = 'id';
 }
-?>

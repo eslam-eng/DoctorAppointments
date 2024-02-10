@@ -1,5 +1,8 @@
+@php
+    $user_lang = Sentinel::getUser()?->lang ?? 'en';
+@endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{$user_lang}}" dir="{{$user_lang == 'ar' ? 'rtl':'ltr'}}">
 <head>
     <meta charset="utf-8"/>
     <title>@yield('title')</title>
@@ -24,7 +27,7 @@
     <link href="{{asset('/admin_design/layouts/vertical/assets/css/icons.min.css')}}" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet"
           href="{{asset('/admin_design/layouts/vertical/assets/libs/twitter-bootstrap-wizard/prettify.css')}}"/>
-    @if(__("message.RTL")==0)
+    @if($user_lang == 'ar')
         <link href="{{asset('/admin_design/layouts/vertical/assets/css/app-rtl.min.css')}}" id="app-style"
               rel="stylesheet" type="text/css"/>
     @else

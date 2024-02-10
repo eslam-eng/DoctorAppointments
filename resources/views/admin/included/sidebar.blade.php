@@ -106,7 +106,7 @@
                 <li>
                     <a href="{{route('areas.index')}}" class="waves-effect">
                         <i class="uil-home"></i>
-                        <span>{{__("message.areas")}}</span>
+                        <span>{{__("message.areas_title")}}</span>
                     </a>
                 </li>
                 <li class="menu-title">{{__("message.branches")}}</li>
@@ -149,25 +149,25 @@
                 <li>
                     <a href="{{route('doctor_report')}}" class="waves-effect">
                         <i class="uil-invoice"></i>
-                        <span>Doctors </span>
+                        <span>{{__('message.Doctors')}} </span>
                     </a>
                 </li>
                 <li>
                     <a href="{{route('user_report')}}" class="waves-effect">
                         <i class="uil-invoice"></i>
-                        <span>User </span>
+                        <span>{{__('message.users_report')}} </span>
                     </a>
                 </li>
                 <li>
                     <a href="{{route('do_sub_report')}}" class="waves-effect">
                         <i class="uil-invoice"></i>
-                        <span>Doctor Subscription </span>
+                        <span>{{__('message.doctor_subscription')}} </span>
                     </a>
                 </li>
                 <li>
                     <a href="{{route('app_book_report')}}" class="waves-effect">
                         <i class="uil-invoice"></i>
-                        <span>Appointment booked </span>
+                        <span>{{__('message.appointment_booked')}} </span>
                     </a>
                 </li>
 

@@ -318,7 +318,7 @@ class AuthenticationController extends Controller
          $store->save();
          Session::flash('message',"Setting Update Successfully");
          Session::flash('alert-class', 'alert-success');
-         return redirect()->back();
+         return redirect(route('show-setting'));
      }
 
     static public function generate_timezone_list(){

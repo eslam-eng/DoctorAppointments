@@ -82,6 +82,9 @@ return [
 
     'locale' => 'en',
 
+    'availableLocales' => [
+        'ar', 'en'
+    ],
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale

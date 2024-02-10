@@ -56,6 +56,11 @@
                 <div class="dropdown-menu dropdown-menu-right">
                     <a class="dropdown-item" href="{{url('admin/editprofile')}}"><i class="uil uil-user-circle font-size-18 align-middle text-muted mr-1"></i> <span class="align-middle">{{__("message.View Profile")}}</span></a>
                     <a class="dropdown-item" href="{{url('admin/changepassword')}}"><i class="mdi mdi-key font-size-18 align-middle text-muted mr-1"></i> <span class="align-middle">{{__("message.Change Password")}}</span></a>
+                    @php
+                    $locale = getLocale() == 'en'?'ar':'en';
+                    $lang_title = getLocale() == 'en' ? 'العربية' : 'English';
+                    @endphp
+                    <a class="dropdown-item" href="{{route('change.lang',$locale)}}"><i class="uil uil-globe font-size-18 align-middle text-muted mr-1"></i> <span class="align-middle">{{$lang_title}}</span></a>
                     <a class="dropdown-item" href="{{url('admin/setting')}}"><i class="uil uil-sliders-v-alt font-size-18 align-middle text-muted mr-1"></i> <span class="align-middle">{{__("message.Setting")}}</span></a>
                     <a class="dropdown-item" href="{{url('admin/logout')}}"><i class="uil uil-sign-out-alt font-size-18 align-middle mr-1 text-muted"></i> <span class="align-middle">{{__("message.Sign out")}}</span></a>
                 </div>
