@@ -734,6 +734,7 @@ class ApiController extends Controller
                 'user_description' => 'required',
                 'payment_type' => 'required',
                 'appointment_type' => ['required', Rule::in(AppointmentTypeEnum::values())],
+                'attachment' => 'nullable|file|mimes:jpeg,png,gif,pdf,mp4,mov,avi|max:10240',
             ];
             $messages = array(
                 'user_id.required' => "user_id is required",
@@ -746,7 +747,7 @@ class ApiController extends Controller
                 'payment_method_nonce.required' => "payment_method_nonce is required",
                 'appointment_type.required' => "please choose Appointment is required",
                 "payment_type.required" => "Payment Type is Required",
-                "stripeToken.required" => "stripeToken is required"
+                "stripeToken.required" => "stripeToken is required",
             );
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -797,6 +798,11 @@ class ApiController extends Controller
                             }
 
                             $data->save();
+                            if ($request->hasFile('attachment') && $request->file('attachment')->isValid()){
+                                $data
+                                    ->addMediaFromRequest($request->file('attachment'))
+                                    ->toMediaCollection();
+                            }
 
                             if ($request->get("payment_type") == "COD" && $data->is_completed)
                                 $this->createSettlement($data);
@@ -1371,6 +1377,7 @@ class ApiController extends Controller
             } else {
 
                 foreach ($data as $d) {
+                    $data['data']['media_url'] = $d->media_url;
                     $user = Patient::find($d->user_id);
                     if ($user) {
                         $d->name = $user->name;

@@ -26,6 +26,7 @@
         "paytm/paytmchecksum": "^1.1",
         "razorpay/razorpay": "^2.5",
         "spatie/laravel-cookie-consent": "^2.12",
+        "spatie/laravel-medialibrary": "*",
         "spatie/laravel-translatable": "^5.2",
         "stephenjude/paystack-lite": "*",
         "stevebauman/location": "^5.2",
