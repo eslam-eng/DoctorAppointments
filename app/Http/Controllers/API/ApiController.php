@@ -734,7 +734,7 @@ class ApiController extends Controller
                 'user_description' => 'required',
                 'payment_type' => 'required',
                 'appointment_type' => ['required', Rule::in(AppointmentTypeEnum::values())],
-                'attachment' => 'nullable|file|mimes:jpeg,png,gif,pdf,mp4,mov,avi|max:10240',
+                'attachment' => 'nullable|file|mimes:jpeg,jpg,png,gif,pdf|max:5240',
             ];
             $messages = array(
                 'user_id.required' => "user_id is required",
@@ -798,12 +798,9 @@ class ApiController extends Controller
                             }
 
                             $data->save();
-                            if ($request->hasFile('attachment') && $request->file('attachment')->isValid()){
-                                $data
-                                    ->addMediaFromRequest($request->file('attachment'))
-                                    ->toMediaCollection();
+                            if ($request->hasFile('attachment')) {
+                                $data->addMediaFromRequest('attachment')->toMediaCollection();
                             }
-
                             if ($request->get("payment_type") == "COD" && $data->is_completed)
                                 $this->createSettlement($data);
                             else
@@ -1686,6 +1683,7 @@ class ApiController extends Controller
                     $ls['id'] = $data->id;
                     $ls['appointment_type'] = $data->appointment_type;
                     $ls['appointment_fees'] = $data->appointment_fees;
+                    $ls['attachment'] = $data->media_url;
                     if ($data->prescription_file != "") {
                         $ls['prescription'] = asset('public/upload/prescription') . '/' . $data->prescription_file;
                     } else {
@@ -1743,6 +1741,7 @@ class ApiController extends Controller
                     $ls['connectycube_user_id'] = $data->patientls->connectycube_user_id;
                     $ls['description'] = $data->user_description;
                     $ls['id'] = $data->id;
+                    $ls['attachment'] = $data->media_url;
                     $ls['appointment_type'] = $data->appointment_type;
                     $ls['appointment_fees'] = $data->appointment_fees;
                     if ($data->prescription_file != "") {

@@ -293,3 +293,12 @@ Route::get('/migrate', function () {
         return 'Error: ' . $e->getMessage();
     }
 });
+
+Route::get('/storage-link', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return 'storage linked successfully';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
