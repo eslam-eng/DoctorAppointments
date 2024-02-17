@@ -2,9 +2,7 @@
 
 namespace App\Services\Question;
 
-use App\Models\Branch;
 use App\Models\Question;
-use App\QueryFilters\BranchesFilter;
 use App\QueryFilters\QuestionsFilter;
 use App\Services\BaseService;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,10 +23,10 @@ class QuestionsService extends BaseService
         return $this->model;
     }
 
-    public function getQuery(?array $filters = [],?array $relations = []): ?Builder
+    public function getQuery(?array $filters = [], ?array $relations = []): ?Builder
     {
         return parent::getQuery($filters)
-            ->when(! empty($filters), function (Builder $builder) use ($filters) {
+            ->when(!empty($filters), function (Builder $builder) use ($filters) {
                 return $builder->filter(new QuestionsFilter($filters));
             });
     }
@@ -38,7 +36,6 @@ class QuestionsService extends BaseService
     {
         return $this->getQuery($filters)->with('user');
     }
-
 
 
     public function paginate(array $filters = []): \Illuminate\Contracts\Pagination\Paginator
@@ -52,7 +49,7 @@ class QuestionsService extends BaseService
         return $this->getQuery()->create($data);
     }
 
-    public function update(Question $question , array $data = []): bool
+    public function update(Question $question, array $data = []): bool
     {
         return $question->update($data);
     }
@@ -64,7 +61,7 @@ class QuestionsService extends BaseService
 
     public function details($question_id)
     {
-        return $this->getQuery(['id'=>$question_id])->with('replies.user')->first();
+        return $this->getQuery(['id' => $question_id])->with('replies.user')->first();
     }
 
 }
