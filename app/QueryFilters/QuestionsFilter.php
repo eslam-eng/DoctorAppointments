@@ -12,6 +12,11 @@ class QuestionsFilter extends QueryFilter
         parent::__construct($params);
     }
 
+    public function id($term)
+    {
+        return $this->builder->where('id',$term);
+    }
+
     public function keyword($term)
     {
         return $this->builder->where('name','LIKE',"%$term%");
