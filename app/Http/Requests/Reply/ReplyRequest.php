@@ -26,7 +26,7 @@ class ReplyRequest extends BaseRequest
         return [
             'question_id' => 'required|integer',
             'user_id' => 'required|exists:users,id',
-            'reply' => 'required|integer',
+            'reply' => 'required|string',
         ];
     }
 
