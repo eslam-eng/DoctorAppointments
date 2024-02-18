@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\BranchController;
 use App\Http\Controllers\API\QuestionController;
+use App\Http\Controllers\API\ReplyController;
 use App\Http\Controllers\API\UrwayCallbackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -86,4 +87,5 @@ Route::get('branches', BranchController::class);
 Route::any('urway/callback', UrwayCallbackController::class);
 
 Route::apiResource('questions', QuestionController::class);
+Route::apiResource('replies', ReplyController::class);
 
