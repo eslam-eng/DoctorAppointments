@@ -36,7 +36,7 @@ class ReplyController extends Controller
         try {
 
             $data = $request->validated();
-            $question = $this->replyService->store(data: $data);
+             $this->replyService->store(data: $data);
             return apiResponse(message: 'created successfully');
 
         } catch (\Exception $exception) {
