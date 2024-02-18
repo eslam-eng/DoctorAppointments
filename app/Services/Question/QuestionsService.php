@@ -61,7 +61,9 @@ class QuestionsService extends BaseService
 
     public function details($question_id)
     {
-        return $this->getQuery(['id' => $question_id])->with('replies.user')->first();
+        return $this->getQuery(['id' => $question_id])->with('replies.user')
+            ->withCount('replies')
+            ->first();
     }
 
 }

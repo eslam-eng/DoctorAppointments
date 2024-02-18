@@ -59,7 +59,7 @@ class QuestionController extends Controller
     {
         $question = $this->questionsService->details($id);
         if ($question)
-            return new QuestionsResource($question);
+            return (new QuestionsResource($question))->additional(['total_replies'=>$question->replies_count]);
         return apiResponse( message: 'question not found');
 
     }
