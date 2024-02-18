@@ -58,7 +58,10 @@ class QuestionController extends Controller
     public function show($id)
     {
         $question = $this->questionsService->details($id);
-        return new QuestionsResource($question);
+        if ($question)
+            return new QuestionsResource($question);
+        return apiResponse( message: 'question not found');
+
     }
 
     /**

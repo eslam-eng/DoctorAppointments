@@ -19,7 +19,7 @@ class QuestionsResource extends JsonResource
             'question'=>$this->question,
             'user_id'=>$this->user_id,
             'user_name'=>$this->user->full_name,
-            'profile_pic' => public_path().'/'.$this->user->profile_pic,
+            'profile_pic' =>asset('upload/profile/'.$this->user->profile_pic),
             'created_at'=>$this->created_at->diffForHumans(),
             'replies'=>RepliesResource::collection($this->whenLoaded('replies'))
 
