@@ -25,6 +25,7 @@ class QuestionRequest extends BaseRequest
     {
         return [
             'question' => 'required|string',
+            'user_id'=>'required|exists:users,id'
         ];
     }
 

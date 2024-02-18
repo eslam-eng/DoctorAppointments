@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Reply\ReplyRequest;
 use App\Models\Reply;
 use App\Services\Reply\ReplyService;
-use Illuminate\Auth\Access\AuthorizationException;
 use Sentinel;
 
 class ReplyController extends Controller
@@ -35,17 +34,11 @@ class ReplyController extends Controller
     public function store(ReplyRequest $request)
     {
         try {
-            if (Sentinel::check()) {
-                $data = $request->validated();
-                $data['user_id'] = Sentinel::getUser()?->id;
-                $question = $this->replyService->store(data: $data);
-                return apiResponse(message: 'created successfully');
 
-            } else {
-                throw new AuthorizationException();
-            }
-        } catch (AuthorizationException $exception) {
-            return apiResponse(message: $exception->getMessage(), code: 403);
+            $data = $request->validated();
+            $question = $this->replyService->store(data: $data);
+            return apiResponse(message: 'created successfully');
+
         } catch (\Exception $exception) {
             return apiResponse(message: $exception->getMessage(), code: 500);
         }
