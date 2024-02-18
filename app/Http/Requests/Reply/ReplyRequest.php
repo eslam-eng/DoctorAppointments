@@ -24,7 +24,7 @@ class ReplyRequest extends BaseRequest
     public function rules()
     {
         return [
-            'question_id' => 'required|integer',
+            'question_id' => 'required|integer|exists:questions,id',
             'user_id' => 'required|exists:users,id',
             'reply' => 'required|string',
         ];
