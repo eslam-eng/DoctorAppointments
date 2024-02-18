@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Question;
 
 use App\Http\Requests\BaseRequest;
+use Illuminate\Validation\Rule;
 use Sentinel;
 class QuestionRequest extends BaseRequest
 {
@@ -25,7 +26,8 @@ class QuestionRequest extends BaseRequest
     {
         return [
             'question' => 'required|string',
-            'user_id'=>'required|exists:users,id'
+            'relatable_id'=>'required|integer',
+            'relatable_type'=>['required',Rule::in(['doctor','patient'])]
         ];
     }
 

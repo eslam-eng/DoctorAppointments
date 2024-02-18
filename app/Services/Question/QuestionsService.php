@@ -40,7 +40,9 @@ class QuestionsService extends BaseService
 
     public function paginate(array $filters = []): \Illuminate\Contracts\Pagination\Paginator
     {
-        return $this->getQuery($filters)->with('user:id,first_name,last_name,profile_pic')->simplePaginate(perPage: 10);
+        return $this->getQuery($filters)
+            ->with('relatable')
+            ->simplePaginate(perPage: 10);
     }
 
 
@@ -61,7 +63,8 @@ class QuestionsService extends BaseService
 
     public function details($question_id)
     {
-        return $this->getQuery(['id' => $question_id])->with('replies.user')
+        return $this->getQuery(['id' => $question_id])
+            ->with('replies.relatable')
             ->withCount('replies')
             ->first();
     }

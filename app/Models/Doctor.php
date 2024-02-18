@@ -27,4 +27,14 @@ class Doctor extends Model
      {
          return asset("public/upload/doctors") . '/' . $this->image;
      }
+
+     public function getProfilePicAttribute()
+     {
+         return $this->image;
+     }
+
+    public function questions()
+    {
+        return $this->morphMany(Question::class, 'relatable');
+    }
 }

@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Reply extends Model
 {
     use HasFactory,Filterable;
-    protected $fillable = ['user_id','reply','question_id'];
+    protected $fillable = ['relatable_id','relatable_type','reply','question_id'];
 
-    public function user(): BelongsTo
+    public function relatable()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->morphTo();
     }
 
     public function question(): BelongsTo

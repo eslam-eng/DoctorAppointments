@@ -17,9 +17,9 @@ class QuestionsResource extends JsonResource
         return [
             'id'=>$this->id,
             'question'=>$this->question,
-            'user_id'=>$this->user_id,
-            'user_name'=>$this->user->full_name,
-            'profile_pic' =>asset('upload/profile/'.$this->user->profile_pic),
+            'user_id'=>$this->relatable?->id,
+            'user_name'=>$this->relatable?->name,
+            'profile_pic' =>asset('upload/profile/'.$this->relatable->profile_pic),
             'created_at'=>$this->created_at->diffForHumans(),
             'replies'=>RepliesResource::collection($this->whenLoaded('replies'))
 

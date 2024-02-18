@@ -16,9 +16,9 @@ class RepliesResource extends JsonResource
     {
         return [
             'id'=>$this->id,
-            'user_id'=>$this->user->id,
-            'user_name'=>$this->user->full_name,
-            'profile_pic' => asset('upload/profile/'.$this->user->profile_pic),
+            'user_id'=>$this->relatable?->id,
+            'user_name'=>$this->relatable->name,
+            'profile_pic' => asset('upload/profile/'.$this->relatable?->profile_pic),
             'reply'=>$this->reply
 
         ];

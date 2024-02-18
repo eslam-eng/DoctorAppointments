@@ -8,7 +8,10 @@ class Patient extends Model
 {
     protected $table = 'patient';
     protected $primaryKey = 'id';
-  
-   
+    public function questions()
+    {
+        return $this->morphMany(Question::class, 'relatable');
+    }
+
 }
 ?>
